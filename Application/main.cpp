@@ -5,6 +5,7 @@
 #include "lua.hpp"
 #include "raylib.h"
 #include "raymath.h"
+#include "entt.hpp"
 
 #define MAX_COLUMNS 10
 #define EPSILON 0.0001f
