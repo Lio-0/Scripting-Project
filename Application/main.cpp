@@ -44,7 +44,7 @@ void ConsoleThreadFunction(lua_State* L)
 int main()
 {
 	std::cout << "Hello Bergman!" << std::endl;
-
+    entt::registry registry;
     // LUA SKIT
 	//Rekommenderat att ha ett men går att ha flera om det behövs
 	//lua_State* L = luaL_newstate();
