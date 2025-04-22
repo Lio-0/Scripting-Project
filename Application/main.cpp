@@ -8,7 +8,6 @@
 #include "entt.hpp"
 
 #define MAX_COLUMNS 10
-#define EPSILON 0.0001f
 
 void DumpError(lua_State* L)
 {
@@ -21,6 +20,23 @@ void DumpError(lua_State* L)
 		lua_pop(L, 1);
 	}
 }
+
+struct Health
+{
+    float Value;
+};
+
+struct Poison
+{
+    float TickDamage;
+};
+
+struct Position
+{
+    float x;
+    float y;
+    float z;
+};
 
 //Function som körs parallelt av tråd
 void ConsoleThreadFunction(lua_State* L)
@@ -43,8 +59,26 @@ void ConsoleThreadFunction(lua_State* L)
 
 int main()
 {
-	std::cout << "Hello Bergman!" << std::endl;
     entt::registry registry;
+
+    srand((unsigned int)time(NULL));
+    for (size_t i = 0; i < 100; i++)
+    {
+        //Create a new entity.
+        auto entity = registry.create();
+
+        //Each entity starts out with 100 health points.
+        registry.emplace<Health>(entity, 100.0f);
+
+        registry.emplace<Position>(entity, float(i) / 10, 0.0f, float(i % 10) / 10);
+
+        //Each entity is poisoned, where the damage per tick is random for each entity.
+        float tickDamage = float(rand() % 10 + 1) / 10; //Random  [1;10]
+        registry.emplace<Poison>(entity, tickDamage);
+    }
+
+
+	std::cout << "Hello Bergman!" << std::endl;
     // LUA SKIT
 	//Rekommenderat att ha ett men går att ha flera om det behövs
 	//lua_State* L = luaL_newstate();
@@ -86,45 +120,25 @@ int main()
     bool collisionZ = false;
     bool airborne = false;
 
-	for (int i = 0; i < MAX_COLUMNS; i++)
+
+
+	/*for (int i = 0; i < MAX_COLUMNS; i++)
 	{
 		heights[i] = 1.0f;
 		positions[i] = { (float)GetRandomValue(-15, -5), (float)(i + 2.0f), (float)GetRandomValue(5, 15)};
 		colors[i] = { (unsigned char)GetRandomValue(20, 255), (unsigned char)GetRandomValue(10, 55), 30, 255 };
-	}
+	}*/
 
 	DisableCursor();                    // Limit cursor to relative movement inside the window
 
+
 	SetTargetFPS(60);
+
 
 	while (!WindowShouldClose())
 	{
         // Update
         //----------------------------------------------------------------------------------
-        // Switch camera mode
-        if (IsKeyPressed(KEY_ONE))
-        {
-            cameraMode = CAMERA_FREE;
-            camera.up = { 0.0f, 1.0f, 0.0f }; // Reset roll
-        }
-
-        if (IsKeyPressed(KEY_TWO))
-        {
-            cameraMode = CAMERA_FIRST_PERSON;
-            camera.up = { 0.0f, 1.0f, 0.0f }; // Reset roll
-        }
-
-        if (IsKeyPressed(KEY_THREE))
-        {
-            cameraMode = CAMERA_THIRD_PERSON;
-            camera.up = { 0.0f, 1.0f, 0.0f }; // Reset roll
-        }
-
-        if (IsKeyPressed(KEY_FOUR))
-        {
-            cameraMode = CAMERA_ORBITAL;
-            camera.up = { 0.0f, 1.0f, 0.0f }; // Reset roll
-        }
 
         lookDirection = Vector3Normalize(camera.target - camera.position);
         camera.target = camera.position + lookDirection;
@@ -338,23 +352,67 @@ int main()
                 // as input parameters, with this approach, rcamera module is internally independent of raylib inputs
 
 
-                UpdateCameraPro(&camera,
-                    Vector3{
-                        (IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-                        (IsKeyDown(KEY_DOWN))*0.1f,
-                        (IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-                        (IsKeyDown(KEY_LEFT))*0.1f,
-                        (IsKeyDown(KEY_ENTER)) * 0.1f-   // Move right-left
-                        (IsKeyDown(KEY_RIGHT_SHIFT)) * 0.1f                                 // Move up-down
-                    },
-                    Vector3{
-                        GetMouseDelta().x*0.05f,                            // Rotation: yaw
-                        GetMouseDelta().y*0.05f,                            // Rotation: pitch
-                        0.0f                                                // Rotation: roll
-                    },
-                    0);                              // Move to target (zoom)
+        UpdateCameraPro(&camera,
+            Vector3{
+                (IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
+                (IsKeyDown(KEY_DOWN))*0.1f,
+                (IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
+                (IsKeyDown(KEY_LEFT))*0.1f,
+                (IsKeyDown(KEY_ENTER)) * 0.1f-   // Move right-left
+                (IsKeyDown(KEY_RIGHT_SHIFT)) * 0.1f                                 // Move up-down
+            },
+            Vector3{
+                GetMouseDelta().x*0.05f,                            // Rotation: yaw
+                GetMouseDelta().y*0.05f,                            // Rotation: pitch
+                0.0f                                                // Rotation: roll
+            },
+            0);                              // Move to target (zoom)
 
+        //----------------------------------------------------------------------------------
+        //Poison tick
+        int iterations = 0;
+        {
+            auto view = registry.view<Health, Poison>();
 
+            view.each([](Health& health, const Poison& poison) {
+                health.Value -= poison.TickDamage;
+                });
+        }
+
+        {
+            auto view = registry.view<Health>();
+
+            view.each([&](entt::entity entity, const Health& health) {
+                if (health.Value <= 0.0f)
+                {
+                    registry.destroy(entity);
+                }
+            });
+        }
+
+        //Spawn poison system
+        {
+            auto view = registry.view<Health>(entt::exclude<Poison>);
+
+            view.each([&](entt::entity entity, const Health& health) {
+                if (rand() % 4 == 0)
+                {
+                    //Poison an entity
+                    float tickDamage = float(rand() % 10 + 1) / 10; //Random  [1;10]
+                    registry.emplace<Poison>(entity, tickDamage);
+                }
+                });
+        }
+
+        //Cure poison system
+        if (rand() % 20 == 0)
+        {
+            auto view = registry.view<Poison>();
+
+            view.each([&](entt::entity entity, const Poison& poison) {
+                    registry.remove<Poison>(entity);
+                });
+        }
 
         //----------------------------------------------------------------------------------
 
@@ -380,6 +438,24 @@ int main()
         DrawCube(playerPosition, playerSize.x, playerSize.y, playerSize.z, PURPLE);
         DrawCubeWires(playerPosition, playerSize.x, playerSize.y, playerSize.z, DARKPURPLE);
 
+
+        {
+            auto view = registry.view<Position, Poison>();
+
+            view.each([](const Position& position, const Poison& poison) {
+                DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, RED);
+                DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
+                });
+        }
+
+        {
+            auto view = registry.view<Position>(entt::exclude<Poison>);
+
+            view.each([](const Position& position) {
+                DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BLUE);
+                DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
+                });
+        }
 
         EndMode3D();
 
