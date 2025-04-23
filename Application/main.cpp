@@ -20,7 +20,7 @@ void DumpError(lua_State* L)
 		lua_pop(L, 1);
 	}
 }
-
+//Allå
 struct Health
 {
     float Value;
