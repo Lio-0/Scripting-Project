@@ -1,11 +1,11 @@
 #include <iostream>
 #include <thread>
 #include <string>
-
 #include "lua.hpp"
 #include "raylib.h"
 #include "raymath.h"
 #include "entt.hpp"
+#include "Scene.hpp"
 
 #define MAX_COLUMNS 10
 
@@ -81,13 +81,21 @@ int main()
 	std::cout << "Hello Bergman!" << std::endl;
     // LUA SKIT
 	//Rekommenderat att ha ett men går att ha flera om det behövs
-	//lua_State* L = luaL_newstate();
+	lua_State* L = luaL_newstate();
 
 	////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
-	//luaL_openlibs(L);
+	luaL_openlibs(L);
 
+    Scene scene;
+    Scene::lua_openscene(L, &scene);
+    if (luaL_dostring(L, "scene.CreateEntity()") != LUA_OK)
+        {
+        	DumpError(L);
+        }
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
+
+
 
 	const int screenWidth = 800 * 2;
 	const int screenHeight = 450 * 2;
@@ -455,6 +463,15 @@ int main()
                 DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BLUE);
                 DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
                 });
+        }
+
+        {
+            auto view = scene.GetRegistry()->view<entt::entity>();
+
+            for (size_t i = 0; i < view.size(); i++)
+            {
+                DrawCylinder(Vector3(i, i, i) * 10, 0.2f, 0.3f, 0.5f, 20, BLACK);
+            }
         }
 
         EndMode3D();
