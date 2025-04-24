@@ -2,12 +2,17 @@
 
 #include "entt.hpp"
 #include "lua.hpp"
+#include "System.hpp"
+#include <vector>
 
 class Scene
 {
-
+	entt::registry m_registry;
+	lua_State* m_luaState;
+	std::vector<System*> m_systems;
+	
 public:
-	Scene() = default;
+	Scene(lua_State* L);
 	~Scene() = default;
 
 	//lua functions
@@ -20,7 +25,7 @@ public:
 	bool IsEntity(int entity);
 	void RemoveEntity(int entity);
 
-	//systems
+	//Systems
 
 	template <typename T, typename...Args>
 	void CreateSystem(Args... args);
@@ -47,9 +52,6 @@ public:
 	void RemoveComponent(int entity);
 
 private:
-	
-
-	entt::registry m_registry;
 
 	//lua functions
 
@@ -73,6 +75,7 @@ private:
 template<typename T, typename ...Args>
 inline void Scene::CreateSystem(Args ...args)
 {
+	m_systems.emplace_back(new T(args...));
 }
 
 template<typename ... Args>

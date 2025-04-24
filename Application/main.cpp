@@ -21,22 +21,7 @@ void DumpError(lua_State* L)
 	}
 }
 
-struct Health
-{
-    float Value;
-};
 
-struct Poison
-{
-    float TickDamage;
-};
-
-struct Position
-{
-    float x;
-    float y;
-    float z;
-};
 
 //Function som körs parallelt av tråd
 void ConsoleThreadFunction(lua_State* L)
@@ -59,24 +44,7 @@ void ConsoleThreadFunction(lua_State* L)
 
 int main()
 {
-    entt::registry registry;
-
     srand((unsigned int)time(NULL));
-    for (size_t i = 0; i < 100; i++)
-    {
-        //Create a new entity.
-        auto entity = registry.create();
-
-        //Each entity starts out with 100 health points.
-        registry.emplace<Health>(entity, 100.0f);
-
-        registry.emplace<Position>(entity, float(i) / 10, 0.0f, float(i % 10) / 10);
-
-        //Each entity is poisoned, where the damage per tick is random for each entity.
-        float tickDamage = float(rand() % 10 + 1) / 10; //Random  [1;10]
-        registry.emplace<Poison>(entity, tickDamage);
-    }
-
 
 	std::cout << "Hello Bergman!" << std::endl;
     // LUA SKIT
@@ -86,15 +54,27 @@ int main()
 	////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
 	luaL_openlibs(L);
 
-    Scene scene;
+    Scene scene(L);
     Scene::lua_openscene(L, &scene);
     if (luaL_dostring(L, "scene.CreateEntity()") != LUA_OK)
         {
         	DumpError(L);
         }
+
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
 
+    for (size_t i = 0; i < 100; i++)
+    {
+        //Create a new entity.
+        auto entity = scene.CreateEntity();
+
+        //Each entity starts out with 100 health points.
+        scene.SetComponent<Health>(entity, 100.0f);
+
+        scene.SetComponent<Vector>(entity, float(i) / 10, 0.0f, float(i % 10) / 10);
+
+    }
 
 
 	const int screenWidth = 800 * 2;
@@ -182,6 +162,36 @@ int main()
             playerSpeed.y += 30.0f;
             airborne = true;
         }
+
+        if (IsKeyDown(KEY_ONE))
+        {
+            scene.CreateSystem<PoisonSystem>(600);
+        }
+        if (IsKeyDown(KEY_TWO))
+        {
+            scene.CreateSystem<CurePoisonSystem>(600);
+        }
+        if (IsKeyDown(KEY_THREE))
+        {
+            scene.CreateSystem<DeathSystem>(600);
+        }
+        if (IsKeyDown(KEY_FOUR))
+        {
+            scene.CreateSystem<SpawnPoisonSystem>(600);
+        }
+
+        if (IsKeyDown(KEY_FIVE))
+        {
+            //Create a new entity.
+            auto entity = scene.CreateEntity();
+
+            //Each entity starts out with 100 health points.
+            scene.SetComponent<Health>(entity, 100.0f);
+
+            scene.SetComponent<Vector>(entity, float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10));
+        }
+
+        scene.UpdateSystems(GetFrameTime());
 
         playerSpeed.x *= 0.9f;
         playerSpeed.z *= 0.9f;
@@ -377,52 +387,6 @@ int main()
             0);                              // Move to target (zoom)
 
         //----------------------------------------------------------------------------------
-        //Poison tick
-        int iterations = 0;
-        {
-            auto view = registry.view<Health, Poison>();
-
-            view.each([](Health& health, const Poison& poison) {
-                health.Value -= poison.TickDamage;
-                });
-        }
-
-        {
-            auto view = registry.view<Health>();
-
-            view.each([&](entt::entity entity, const Health& health) {
-                if (health.Value <= 0.0f)
-                {
-                    registry.destroy(entity);
-                }
-            });
-        }
-
-        //Spawn poison system
-        {
-            auto view = registry.view<Health>(entt::exclude<Poison>);
-
-            view.each([&](entt::entity entity, const Health& health) {
-                if (rand() % 4 == 0)
-                {
-                    //Poison an entity
-                    float tickDamage = float(rand() % 10 + 1) / 10; //Random  [1;10]
-                    registry.emplace<Poison>(entity, tickDamage);
-                }
-                });
-        }
-
-        //Cure poison system
-        if (rand() % 20 == 0)
-        {
-            auto view = registry.view<Poison>();
-
-            view.each([&](entt::entity entity, const Poison& poison) {
-                    registry.remove<Poison>(entity);
-                });
-        }
-
-        //----------------------------------------------------------------------------------
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -448,18 +412,18 @@ int main()
 
 
         {
-            auto view = registry.view<Position, Poison>();
+            auto view = scene.GetRegistry()->view<Vector, Poison>();
 
-            view.each([](const Position& position, const Poison& poison) {
+            view.each([](const Vector& position, const Poison& poison) {
                 DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, RED);
                 DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
                 });
         }
 
         {
-            auto view = registry.view<Position>(entt::exclude<Poison>);
+            auto view = scene.GetRegistry()->view<Vector>(entt::exclude<Poison>);
 
-            view.each([](const Position& position) {
+            view.each([](const Vector& position) {
                 DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BLUE);
                 DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
                 });
@@ -477,15 +441,16 @@ int main()
         EndMode3D();
 
         // Draw info boxes
-        DrawRectangle(5, 5, 330, 100, Fade(SKYBLUE, 0.5f));
-        DrawRectangleLines(5, 5, 330, 100, BLUE);
+        DrawRectangle(5, 5, 345, 100, Fade(SKYBLUE, 0.5f));
+        DrawRectangleLines(5, 5, 345, 100, BLUE);
 
-        DrawText("Camera controls:", 15, 15, 10, BLACK);
-        DrawText("- Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
-        DrawText("- Look around: arrow keys or mouse", 15, 45, 10, BLACK);
-        DrawText("- Camera mode keys: 1, 2, 3, 4", 15, 60, 10, BLACK);
-        DrawText("- Zoom keys: num-plus, num-minus or mouse scroll", 15, 75, 10, BLACK);
-        DrawText("- Camera projection key: P", 15, 90, 10, BLACK);
+        DrawText("Camera controls: Up, Down, Left, Right, Enter, Right-Shift", 15, 15, 10, BLACK);
+        DrawText("Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
+        DrawText("1. Poison System", 15, 45, 10, BLACK);
+        DrawText("2. Cure Poison System", 15, 60, 10, BLACK);
+        DrawText("3. Death System", 15, 75, 10, BLACK);
+        DrawText("4. Spawn Poison System", 15, 90, 10, BLACK);
+        DrawText("5. Spawn Entities", 15, 105, 10, BLACK);
 
         DrawRectangle(600, 5, 195, 100, Fade(SKYBLUE, 0.5f));
         DrawRectangleLines(600, 5, 195, 100, BLUE);

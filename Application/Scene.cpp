@@ -1,17 +1,14 @@
 #include "Scene.hpp"
 #include "Components.hpp"
 
+Scene::Scene(lua_State* L)
+{
+	this->m_luaState = L;
+}
 
 int Scene::GetEntityCount()
 {
-	int count = 0;
-
-	for (auto entity: m_registry.view<entt::entity>())
-	{
-		count++;
-	}
-
-	return count;
+	return m_registry.view<entt::entity>().size();
 }
 
 int Scene::CreateEntity()
@@ -31,7 +28,18 @@ void Scene::RemoveEntity(int entity)
 
 void Scene::UpdateSystems(float delta)
 {
-
+	for (auto it = m_systems.begin(); it != m_systems.end();)
+	{
+		if ((*it)->OnUpdate(m_registry, delta))
+		{
+			delete (*it);
+			it = m_systems.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 void Scene::lua_openscene(lua_State* L, Scene* scene)
@@ -54,26 +62,26 @@ Scene* lua_GetSceneUpValue(lua_State* L)
 	return static_cast<Scene*>(lua_touserdata(L, lua_upvalueindex(1)));
 }
 
-void lua_pushtransform(lua_State* L, const Transform& transform)
-{
-	lua_newtable(L);
-
-	lua_pushstring(L, "x");
-	lua_pushnumber(L, transform.x);
-	lua_settable(L, -3);
-
-	lua_pushstring(L, "y");
-	lua_pushnumber(L, transform.y);
-	lua_settable(L, -3);
-
-	lua_pushstring(L, "x");
-	lua_pushnumber(L, transform.x);
-	lua_settable(L, -3);
-
-	lua_pushstring(L, "rotation");
-	lua_pushnumber(L, transform.rotation);
-	lua_settable(L, -3);
-}
+//void lua_pushtransform(lua_State* L, const Transform& transform)
+//{
+//	lua_newtable(L);
+//
+//	/*lua_pushstring(L, "x");
+//	lua_pushnumber(L, transform.x);
+//	lua_settable(L, -3);
+//
+//	lua_pushstring(L, "y");
+//	lua_pushnumber(L, transform.y);
+//	lua_settable(L, -3);
+//
+//	lua_pushstring(L, "x");
+//	lua_pushnumber(L, transform.x);
+//	lua_settable(L, -3);
+//
+//	lua_pushstring(L, "rotation");
+//	lua_pushnumber(L, transform.rotation);
+//	lua_settable(L, -3);*/
+//}
 
 int Scene::lua_CreateEntity(lua_State* L)
 {
@@ -84,6 +92,27 @@ int Scene::lua_CreateEntity(lua_State* L)
 
 int Scene::lua_SetComponent(lua_State* L)
 {
+	Scene* scene = lua_GetSceneUpValue(L);
+
+	int entity = lua_tointeger(L, 1);
+	std::string type = lua_tostring(L, 2);
+
+	if (type == "health")
+	{
+		float value = lua_tonumber(L, 3);
+		scene->SetComponent<Health>(entity, value);
+	}
+	else if (type == "poison")
+	{
+		float tickDamage = lua_tonumber(L, 3);
+		scene->SetComponent<Poison>(entity, tickDamage);
+	}
+	else if (type == "transform")
+	{
+		/*Transform transform = lua_totransform(L, 3);
+		scene->SetComponent<Transform>(entity);*/
+	}
+
 	return 0;
 }
 
@@ -124,7 +153,7 @@ int Scene::lua_HasComponent(lua_State* L)
 
 	if (type == "transform")
 	{
-		hasComponent = scene->HasComponents<Transform>(entity);
+		hasComponent = scene->HasComponents<Vector>(entity);
 	}
 	else if (type == "collision")
 	{
@@ -156,10 +185,10 @@ int Scene::lua_GetComponent(lua_State* L)
 	}
 
 
-	if (type == "transform" && scene->HasComponents<Transform>(entity))
+	if (type == "vector" && scene->HasComponents<Vector>(entity))
 	{
-		Transform& transform = scene->GetComponent<Transform>(entity);
-		lua_pushtransform(L, transform);
+		Vector& vector = scene->GetComponent<Vector>(entity);
+		/*lua_pushvector(L, vector);*/
 		return 1;
 	}
 
@@ -174,14 +203,13 @@ int Scene::lua_RemoveComponent(lua_State* L)
 	int entity = lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
 
-	if (type == "transform" && scene->HasComponents<Transform>(entity))
+	if (type == "vector" && scene->HasComponents<Vector>(entity))
 	{
-		scene->RemoveComponent<Transform>(entity);
+		scene->RemoveComponent<Vector>(entity);
 		return 1;
 	}
 	return 0;
 }
-
 
 //Fuskbygge
 entt::registry* Scene::GetRegistry()
