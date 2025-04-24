@@ -68,12 +68,29 @@ Scene* lua_GetSceneUpValue(lua_State* L)
 	return static_cast<Scene*>(lua_touserdata(L, lua_upvalueindex(1)));
 }
 
+void lua_pushvector(lua_State* L, const c_Vector& vec)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, vec.x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, vec.y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, vec.z);
+	lua_setfield(L, -2, "z");
+}
+
 void lua_pushtransform(lua_State* L, const c_Transform& transform)
 {
 	lua_newtable(L);
 
-	
-	lua_settable(L, -3);
+	lua_pushvector(L, transform.position);
+	lua_setfield(L, -2, "position");
+
+	lua_pushvector(L, transform.rotation);
+	lua_setfield(L, -2, "rotation");
+
+	lua_pushvector(L, transform.scale);
+	lua_setfield(L, -2, "scale");
 }
 
 c_Vector lua_getvector(lua_State* L, int index)
@@ -221,15 +238,7 @@ int Scene::lua_GetComponent(lua_State* L)
 	if (type == "vector" && scene->HasComponents<c_Vector>(entity))
 	{
 		c_Vector& vector = scene->GetComponent<c_Vector>(entity);
-
-		lua_newtable(L);
-		lua_pushnumber(L, vector.x);
-		lua_setfield(L, -2, "x");
-		lua_pushnumber(L, vector.y);
-		lua_setfield(L, -2, "y");
-		lua_pushnumber(L, vector.z);
-		lua_setfield(L, -2, "z");
-
+		lua_pushvector(L, vector);
 		return 1;
 	}
 	else if (type == "transform" && scene->HasComponents<c_Transform>(entity))
