@@ -1,7 +1,6 @@
 local filur = {}
 
 function filur:OnCreate()
-	print("Filur Created!");
 end
 
 function filur:OnUpdate(delta)
