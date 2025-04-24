@@ -2,6 +2,8 @@
 #include "entt.hpp"
 #include "Components.hpp"
 #include "GameConsole.hpp"
+#include "Scene.hpp"
+
 
 class System
 {
