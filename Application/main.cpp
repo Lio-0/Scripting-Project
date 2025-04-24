@@ -59,7 +59,7 @@ int main()
         //Each entity starts out with 100 health points.
         scene.SetComponent<c_Health>(entity, 100.0f);
 
-        c_Vector pos = { float(i) / 10, 0.0f, float(i % 10) / 10};
+        c_Vector pos = { float(i) / 10, 0.0f, float(i % 10) / 10.0f};
         c_Vector rot = { 0.0f, 0.0f, 0.0f };
         c_Vector scale = { 2.0f, 0.0f, 0.0f };
         c_Transform transform = { pos, rot, scale };
@@ -118,6 +118,7 @@ int main()
 	{
         // Update
         //----------------------------------------------------------------------------------
+
 
         lookDirection = Vector3Normalize(camera.target - camera.position);
         camera.target = camera.position + lookDirection;
@@ -410,7 +411,7 @@ int main()
 
         {
 
-            auto view = scene.GetRegistry()->view<c_Vector>(entt::exclude<c_Poison, c_Behaviour>);
+            auto view = scene.GetRegistry()->view<c_Transform>(entt::exclude<c_Poison, c_Behaviour>);
             
             view.each([](const c_Transform& transform) {
                 DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f * transform.scale.x, BLUE);
@@ -419,11 +420,11 @@ int main()
         }
 
         {
-            auto view = scene.GetRegistry()->view<c_Behaviour, c_Vector>();
+            auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform>();
 
-            view.each([](const c_Behaviour& behaviour, const c_Vector& position) {
-                DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BEIGE);
-                DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 12, 12, BLACK);
+            view.each([](const c_Behaviour& behaviour, const c_Transform& transform) {
+                DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, BEIGE);
+                DrawSphereWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, 12, 12, BLACK);
                 });
         }
 

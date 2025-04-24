@@ -5,15 +5,15 @@ function filur:OnCreate()
 end
 
 function filur:OnUpdate(delta)
-	print("Filur Updated!")
 
-	--[[self.vector = self.vector + vector(0.1, 0, 0.1)
+	local transform = scene.GetComponent(self.ID, "transform")
+	local health = scene.GetComponent(self.ID, "health")
 
-	self.health = self.health - 1;
+	health = health - 1
+	transform.position.x = transform.position.x + delta;
 
-	if self.health <= 0 then
-		scene.RemoveEntity(self.ID)
-	end]]--
+	scene.SetComponent(self.ID, "health", health)
+	scene.SetComponent(self.ID, "transform", transform)
 end
 
 return filur

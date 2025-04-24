@@ -4,8 +4,6 @@
 struct c_Vector {
 
     float x, y, z;
-
-    c_Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 };
 
 struct c_Transform {
