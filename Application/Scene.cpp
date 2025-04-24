@@ -66,6 +66,10 @@ void lua_pushtransform(lua_State* L, const Transform& transform)
 	lua_pushnumber(L, transform.y);
 	lua_settable(L, -3);
 
+	lua_pushstring(L, "x");
+	lua_pushnumber(L, transform.x);
+	lua_settable(L, -3);
+
 	lua_pushstring(L, "rotation");
 	lua_pushnumber(L, transform.rotation);
 	lua_settable(L, -3);

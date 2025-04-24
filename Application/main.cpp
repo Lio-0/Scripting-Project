@@ -130,12 +130,12 @@ int main()
 
 
 
-	/*for (int i = 0; i < MAX_COLUMNS; i++)
+	for (int i = 0; i < MAX_COLUMNS; i++)
 	{
 		heights[i] = 1.0f;
 		positions[i] = { (float)GetRandomValue(-15, -5), (float)(i + 2.0f), (float)GetRandomValue(5, 15)};
 		colors[i] = { (unsigned char)GetRandomValue(20, 255), (unsigned char)GetRandomValue(10, 55), 30, 255 };
-	}*/
+	}
 
 	DisableCursor();                    // Limit cursor to relative movement inside the window
 

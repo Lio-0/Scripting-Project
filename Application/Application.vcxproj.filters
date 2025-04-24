@@ -26,10 +26,10 @@
     <ClInclude Include="Scene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="System.hpp">
+    <ClInclude Include="Components.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Components.hpp">
+    <ClInclude Include="System.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
