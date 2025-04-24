@@ -218,11 +218,36 @@ int Scene::lua_GetComponent(lua_State* L)
 		return 1;
 	}
 
-
 	if (type == "vector" && scene->HasComponents<c_Vector>(entity))
 	{
 		c_Vector& vector = scene->GetComponent<c_Vector>(entity);
-		/*lua_pushvector(L, vector);*/
+
+		lua_newtable(L);
+		lua_pushnumber(L, vector.x);
+		lua_setfield(L, -2, "x");
+		lua_pushnumber(L, vector.y);
+		lua_setfield(L, -2, "y");
+		lua_pushnumber(L, vector.z);
+		lua_setfield(L, -2, "z");
+
+		return 1;
+	}
+	else if (type == "transform" && scene->HasComponents<c_Transform>(entity))
+	{
+		c_Transform& transform = scene->GetComponent<c_Transform>(entity);
+		lua_pushtransform(L, transform);
+		return 1;
+	}
+	else if (type == "health" && scene->HasComponents<c_Health>(entity))
+	{
+		c_Health& health = scene->GetComponent<c_Health>(entity);
+		lua_pushnumber(L, health.Value);
+		return 1;
+	}
+	else if (type == "poison" && scene->HasComponents<c_Poison>(entity))
+	{
+		c_Poison& poison = scene->GetComponent<c_Poison>(entity);
+		lua_pushnumber(L, poison.TickDamage);
 		return 1;
 	}
 
