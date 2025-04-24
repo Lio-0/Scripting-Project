@@ -432,15 +432,15 @@ int main()
 
             for (size_t i = 0; i < view.size(); i++)
             {
-                DrawCylinder(Vector3(i, i, i) * 10, 0.2f, 0.3f, 0.5f, 20, BLACK);
+                DrawCylinder(Vector3(0, i, 0) / 10, 2.0f / i, 1.7f / i, 0.5f, 20, BLACK);
             }
         }
 
         EndMode3D();
 
         // Draw info boxes
-        DrawRectangle(5, 5, 345, 100, Fade(SKYBLUE, 0.5f));
-        DrawRectangleLines(5, 5, 345, 100, BLUE);
+        DrawRectangle(5, 5, 310, 115, Fade(SKYBLUE, 0.5f));
+        DrawRectangleLines(5, 5, 310, 115, BLUE);
 
         DrawText("Camera controls: Up, Down, Left, Right, Enter, Right-Shift", 15, 15, 10, BLACK);
         DrawText("Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
