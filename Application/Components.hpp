@@ -1,25 +1,25 @@
 #pragma once
 
-struct Vector {
+struct c_Vector {
     float x, y, z;
 };
 
-//struct CustomTransform {
-//    Vector position, rotation, scale;
-//};
+struct c_Transform {
+    c_Vector position, rotation, scale;
+};
 
-struct Collision {
+struct c_Collision {
     float width;
     float height;
     bool isColliding;
 };
 
-struct Health
+struct c_Health
 {
     float Value;
 };
 
-struct Poison
+struct c_Poison
 {
     float TickDamage;
 };

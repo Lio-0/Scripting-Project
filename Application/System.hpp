@@ -17,8 +17,8 @@ public:
 
 	bool OnUpdate(entt::registry& registry, float delta) final
 	{
-		auto view = registry.view<Health, Poison>();
-		view.each([](Health& health, const Poison& poison) {
+		auto view = registry.view<c_Health, c_Poison>();
+		view.each([](c_Health& health, const c_Poison& poison) {
 			health.Value -= poison.TickDamage;
 			});
 
@@ -35,14 +35,14 @@ public:
 
 	bool OnUpdate(entt::registry& registry, float delta) final
 	{
-		auto view = registry.view<Health>(entt::exclude<Poison>);
+		auto view = registry.view<c_Health>(entt::exclude<c_Poison>);
 
-		view.each([&](entt::entity entity, const Health& health) {
+		view.each([&](entt::entity entity, const c_Health& health) {
 			if (rand() % 4 == 0)
 			{
 				//Poison an entity
 				float tickDamage = float(rand() % 10 + 1) / 10; //Random  [1;10]
-				registry.emplace<Poison>(entity, tickDamage);
+				registry.emplace<c_Poison>(entity, tickDamage);
 			}
 			});
 
@@ -61,10 +61,10 @@ public:
 	{
 		if (rand() % 20 == 0)
 		{
-			auto view = registry.view<Poison>();
+			auto view = registry.view<c_Poison>();
 
-			view.each([&](entt::entity entity, const Poison& poison) {
-				registry.remove<Poison>(entity);
+			view.each([&](entt::entity entity, const c_Poison& poison) {
+				registry.remove<c_Poison>(entity);
 				});
 		}
 
@@ -81,9 +81,9 @@ public:
 
 	bool OnUpdate(entt::registry& registry, float delta) final
 	{
-		auto view = registry.view<Health>();
+		auto view = registry.view<c_Health>();
 
-		view.each([&](entt::entity entity, const Health& health) {
+		view.each([&](entt::entity entity, const c_Health& health) {
 			if (health.Value <= 0.0f)
 			{
 				registry.destroy(entity);

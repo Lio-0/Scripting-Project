@@ -68,9 +68,9 @@ int main()
         auto entity = scene.CreateEntity();
 
         //Each entity starts out with 100 health points.
-        scene.SetComponent<Health>(entity, 100.0f);
+        scene.SetComponent<c_Health>(entity, 100.0f);
 
-        scene.SetComponent<Vector>(entity, float(i) / 10, 0.0f, float(i % 10) / 10);
+        scene.SetComponent<c_Vector>(entity, float(i) / 10, 0.0f, float(i % 10) / 10);
 
     }
 
@@ -184,9 +184,9 @@ int main()
             auto entity = scene.CreateEntity();
 
             //Each entity starts out with 100 health points.
-            scene.SetComponent<Health>(entity, 100.0f);
+            scene.SetComponent<c_Health>(entity, 100.0f);
 
-            scene.SetComponent<Vector>(entity, float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10));
+            scene.SetComponent<c_Vector>(entity, float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10));
         }
 
         scene.UpdateSystems(GetFrameTime());
@@ -410,18 +410,18 @@ int main()
 
 
         {
-            auto view = scene.GetRegistry()->view<Vector, Poison>();
+            auto view = scene.GetRegistry()->view<c_Vector, c_Poison>();
 
-            view.each([](const Vector& position, const Poison& poison) {
+            view.each([](const c_Vector& position, const c_Poison& poison) {
                 DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, RED);
                 DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
                 });
         }
 
         {
-            auto view = scene.GetRegistry()->view<Vector>(entt::exclude<Poison>);
+            auto view = scene.GetRegistry()->view<c_Vector>(entt::exclude<c_Poison>);
 
-            view.each([](const Vector& position) {
+            view.each([](const c_Vector& position) {
                 DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BLUE);
                 DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 5, 5, BLACK);
                 });
