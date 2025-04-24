@@ -3,6 +3,8 @@
 #include "Scene.hpp"
 #include "Components.hpp"
 
+#define SCRIPT_PATH "scripts\\"
+
 Scene::Scene(lua_State* L)
 {
 	this->m_luaState = L;
