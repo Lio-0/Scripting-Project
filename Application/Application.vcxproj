@@ -158,11 +158,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameConsole.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.hpp" />
+    <ClInclude Include="GameConsole.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="System.hpp" />
   </ItemGroup>

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <thread>
 #include <string>
@@ -9,17 +11,7 @@
 
 #define MAX_COLUMNS 10
 
-void DumpError(lua_State* L)
-{
-	//Hämta toppen av lua stacken och kolla om det är en sträng
-	if (lua_gettop(L) > 0 && lua_isstring(L, -1))
-	{
-		std::cout << "Lua error: " << lua_tostring(L, -1) << std::endl;
 
-		//Ta bort meddelandet från stacken
-		lua_pop(L, 1);
-	}
-}
 
 //Function som körs parallelt av tråd
 void ConsoleThreadFunction(lua_State* L)
@@ -54,10 +46,7 @@ int main()
 
     Scene scene(L);
     Scene::lua_openscene(L, &scene);
-    if (luaL_dostring(L, "scene.CreateEntity()") != LUA_OK)
-        {
-        	DumpError(L);
-        }
+    scene.CreateSystem<BehaviourSystem>(L);
 
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
@@ -180,13 +169,10 @@ int main()
 
         if (IsKeyDown(KEY_FIVE))
         {
-            //Create a new entity.
-            auto entity = scene.CreateEntity();
-
-            //Each entity starts out with 100 health points.
-            scene.SetComponent<c_Health>(entity, 100.0f);
-
-            scene.SetComponent<c_Vector>(entity, float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10));
+            if (luaL_dofile(L, "createFilur.lua") != LUA_OK)
+            {
+                GameConsole::DumpError(L);
+            }
         }
 
         scene.UpdateSystems(GetFrameTime());
@@ -419,7 +405,7 @@ int main()
         }
 
         {
-            auto view = scene.GetRegistry()->view<c_Vector>(entt::exclude<c_Poison>);
+            auto view = scene.GetRegistry()->view<c_Vector>(entt::exclude<c_Poison, c_Behaviour>);
 
             view.each([](const c_Vector& position) {
                 DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BLUE);
@@ -428,11 +414,20 @@ int main()
         }
 
         {
+            auto view = scene.GetRegistry()->view<c_Behaviour, c_Vector>();
+
+            view.each([](const c_Behaviour& behaviour, const c_Vector& position) {
+                DrawSphere(Vector3{ position.x, position.y, position.z }, 0.1f, BEIGE);
+                DrawSphereWires(Vector3{ position.x, position.y, position.z }, 0.1f, 12, 12, BLACK);
+                });
+        }
+
+        {
             auto view = scene.GetRegistry()->view<entt::entity>();
 
             for (size_t i = 0; i < view.size(); i++)
             {
-                DrawCylinder(Vector3(0, i, 0) / 10, 2.0f / i, 1.7f / i, 0.5f, 20, BLACK);
+                DrawCylinder(Vector3(0, i, 0) / 100, 0.1f, 0.1f, 0.1f, 20, BLACK);
             }
         }
 

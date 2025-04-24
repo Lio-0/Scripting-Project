@@ -1,7 +1,11 @@
 #pragma once
+#include <stdlib.h>
 
 struct c_Vector {
+
     float x, y, z;
+
+    c_Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 };
 
 struct c_Transform {
@@ -22,4 +26,16 @@ struct c_Health
 struct c_Poison
 {
     float TickDamage;
+};
+
+struct c_Behaviour
+{
+    char ScriptPath[64];
+    int LuaTableRef;
+
+    c_Behaviour(const char* path, int luaRef) : LuaTableRef(luaRef)
+    {
+        memset(ScriptPath, '\0', 64);
+        strcpy_s(ScriptPath, path);
+    }
 };

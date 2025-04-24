@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Scene.hpp"
 #include "Components.hpp"
 
@@ -48,7 +50,10 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 
 	luaL_Reg methods[] = {
 		{"CreateEntity", lua_CreateEntity},
+		{"RemoveEntity", lua_RemoveEntity},
+		{"IsEntity", lua_IsEntity},
 		{"SetComponent", lua_SetComponent},
+		{"RemoveComponent", lua_RemoveComponent},
 		{NULL, NULL}
 	};
 
@@ -73,8 +78,9 @@ void lua_pushtransform(lua_State* L, const c_Transform& transform)
 int Scene::lua_CreateEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
-	scene->CreateEntity();
-	return 0;
+	int entity = scene->CreateEntity();
+	lua_pushinteger(L, entity);
+	return 1;
 }
 
 int Scene::lua_SetComponent(lua_State* L)
@@ -94,10 +100,26 @@ int Scene::lua_SetComponent(lua_State* L)
 		float tickDamage = lua_tonumber(L, 3);
 		scene->SetComponent<c_Poison>(entity, tickDamage);
 	}
-	else if (type == "transform")
+	else if (type == "behaviour")
 	{
-		//c_Transform transform = lua_totransform(L, 3);
-		scene->SetComponent<c_Transform>(entity);
+		if (scene->HasComponents<c_Behaviour>(entity))
+		{
+			scene->RemoveComponent<c_Behaviour>(entity);
+		}
+
+		const char* path = lua_tostring(L, 3);
+		int ref = RefAndPushBehaviour(L, entity, path);
+		scene->SetComponent<c_Behaviour>(entity, path, ref);
+
+		return 1;
+	}
+	else if (type == "vector")
+	{
+		float x = lua_tonumber(L, 3);
+		float y = lua_tonumber(L, 4);
+		float z = lua_tonumber(L, 5);
+
+		scene->SetComponent<c_Vector>(entity, x, y, z);
 	}
 
 	return 0;
@@ -112,7 +134,7 @@ int Scene::lua_GetEntityCount(lua_State* L)
 	return 1;
 }
 
-int Scene::lua_isEntity(lua_State* L)
+int Scene::lua_IsEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
 	int entity = lua_tointeger(L, 1);
@@ -202,4 +224,24 @@ int Scene::lua_RemoveComponent(lua_State* L)
 entt::registry* Scene::GetRegistry()
 {
 	return &m_registry;
+}
+
+int Scene::RefAndPushBehaviour(lua_State* L, int entity, const char* path)
+{
+	luaL_dofile(L, path);
+
+	lua_pushvalue(L, -1);
+	int luaTableRef = luaL_ref(L, LUA_REGISTRYINDEX);
+
+	lua_pushinteger(L, entity);
+	lua_setfield(L, -2, "ID");
+
+	lua_pushstring(L, path);
+	lua_setfield(L, -2, "path");
+
+	lua_getfield(L, -1, "OnCreate");
+	lua_pushvalue(L, -2);
+	lua_pcall(L, 1, 0, 0);
+
+	return luaTableRef;
 }

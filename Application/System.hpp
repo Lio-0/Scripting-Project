@@ -1,6 +1,7 @@
 #pragma once
 #include "entt.hpp"
 #include "Components.hpp"
+#include "GameConsole.hpp"
 
 class System
 {
@@ -91,5 +92,34 @@ public:
 			});
 
 		return (--m_lifetime) <= 0;
+	}
+};
+
+class BehaviourSystem : public System
+{
+	lua_State* L;
+
+public:
+	BehaviourSystem(lua_State* L) : L(L) {}
+
+	bool OnUpdate(entt::registry& registry, float delta) final
+	{
+		auto view = registry.view<c_Behaviour>();
+
+		view.each([&](c_Behaviour& script) {
+			lua_rawgeti(L, LUA_REGISTRYINDEX, script.LuaTableRef);
+			lua_getfield(L, -1, "OnUpdate");
+			lua_pushvalue(L, -2);
+			lua_pushnumber(L, delta);
+
+			if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+			{
+				GameConsole::DumpError(L);
+			}
+
+			lua_pop(L, 1);
+			});
+
+		return false;
 	}
 };
