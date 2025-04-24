@@ -49,6 +49,12 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 	luaL_Reg methods[] = {
 		{"CreateEntity", lua_CreateEntity},
 		{"SetComponent", lua_SetComponent},
+		{"HasComponent", lua_HasComponent},
+		{"GetComponent", lua_GetComponent},
+		{"RemoveComponent", lua_RemoveComponent},
+		{"IsEntity", lua_isEntity},
+		{"RemoveEntity", lua_RemoveEntity},
+		{"GetEntityCount", lua_GetEntityCount},
 		{NULL, NULL}
 	};
 
@@ -68,6 +74,43 @@ void lua_pushtransform(lua_State* L, const c_Transform& transform)
 
 	
 	lua_settable(L, -3);
+}
+
+c_Vector lua_getvector(lua_State* L, int index)
+{
+	c_Vector vec;
+	lua_getfield(L, index, "x");
+	vec.x = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "y");
+	vec.y = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "z");
+	vec.z = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	return vec;
+}
+
+c_Transform lua_totransform(lua_State* L, int index)
+{
+	c_Transform t;
+
+	lua_getfield(L, index, "position");
+	t.position = lua_getvector(L, lua_gettop(L));
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "rotation");
+	t.rotation = lua_getvector(L, lua_gettop(L));
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "scale");
+	t.scale = lua_getvector(L, lua_gettop(L));
+	lua_pop(L, 1);
+
+	return t;
 }
 
 int Scene::lua_CreateEntity(lua_State* L)
@@ -96,8 +139,12 @@ int Scene::lua_SetComponent(lua_State* L)
 	}
 	else if (type == "transform")
 	{
-		//c_Transform transform = lua_totransform(L, 3);
-		scene->SetComponent<c_Transform>(entity);
+		if (!lua_istable(L, 3)) {
+			return luaL_error(L, "Expected table for transform");
+		}
+
+		c_Transform transform = lua_totransform(L, 3);
+		scene->SetComponent<c_Transform>(entity, transform);
 	}
 
 	return 0;

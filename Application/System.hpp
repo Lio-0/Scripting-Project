@@ -1,6 +1,7 @@
 #pragma once
 #include "entt.hpp"
 #include "Components.hpp"
+#include "Scene.hpp"
 
 class System
 {
