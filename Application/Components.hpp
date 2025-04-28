@@ -42,3 +42,10 @@ struct c_Behaviour
         strcpy_s(ScriptPath, path);
     }
 };
+
+struct c_Visual
+{
+    std::string modelName;
+    std::string textureName;
+    bool isRendered;
+};

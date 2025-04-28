@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "Components.hpp"
+#include "raylib.h"
 
 #define SCRIPT_PATH "scripts\\"
 
@@ -192,6 +193,13 @@ int Scene::lua_SetComponent(lua_State* L)
 		c_Transform transform = lua_totransform(L, 3);
 		scene->SetComponent<c_Transform>(entity, transform);
 	}
+	else if (type == "visual")
+	{
+		const char* modelName = lua_tostring(L, 3);
+		const char* textureName = lua_tostring(L, 4);
+		bool isRendered = lua_toboolean(L, 5);
+		scene->SetComponent<c_Visual>(entity, modelName, textureName, isRendered);
+	}
 
 	return 0;
 }
@@ -332,4 +340,28 @@ int Scene::RefAndPushBehaviour(lua_State* L, int entity, const char* path)
 	lua_pcall(L, 1, 0, 0);
 
 	return luaTableRef;
+}
+
+void Scene::DrawScene(Renderer& renderer)
+{
+	std::vector<RenderData> renderObjects;
+
+	auto view = m_registry.view<c_Transform, c_Visual>();
+
+	view.each([&](const c_Transform& transform, const c_Visual& visual)
+	{
+		if (!visual.isRendered)
+			return;
+
+		RenderData data;
+		data.position = { transform.position.x, transform.position.y, transform.position.z };
+		data.rotation = { transform.rotation.x, transform.rotation.y, transform.rotation.z };
+		data.scale = { transform.scale.x, transform.scale.y, transform.scale.z };
+		data.modelName = visual.modelName;
+		data.textureName = visual.textureName;
+
+		renderObjects.push_back(data);
+	});
+
+	renderer.Draw(renderObjects);
 }

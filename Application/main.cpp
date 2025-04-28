@@ -33,6 +33,7 @@ void ConsoleThreadFunction(lua_State* L)
 	//}
 }
 
+
 int main()
 {
     srand((unsigned int)time(NULL));
@@ -65,9 +66,10 @@ int main()
 
         c_Vector pos = { float(i) / 10, 0.0f, float(i % 10) / 10.0f};
         c_Vector rot = { 0.0f, 0.0f, 0.0f };
-        c_Vector scale = { 2.0f, 0.0f, 0.0f };
+        c_Vector scale = { 1.0f, 1.0f, 1.0f };
         c_Transform transform = { pos, rot, scale };
         scene.SetComponent<c_Transform>(entity, transform);
+        scene.SetComponent<c_Visual>(entity, "cube", "", true);
 
     }
 
@@ -106,6 +108,9 @@ int main()
 
 	SetTargetFPS(60);
 
+    Renderer renderer;
+    Model cubeModel = LoadModel("cube.obj");
+    renderer.LoadModel("cube", cubeModel);
 
 	while (!WindowShouldClose())
 	{
@@ -206,6 +211,7 @@ int main()
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
+
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
@@ -220,7 +226,8 @@ int main()
             DrawCubeWires(positions[i], 2.0f, heights[i], 2.0f, BLACK);
         }
 
-        {
+
+        /*{
             auto view = scene.GetRegistry()->view<c_Transform, c_Poison>();
 
             view.each([](const c_Transform& transform, const c_Poison& poison) {
@@ -246,7 +253,7 @@ int main()
                 DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, BEIGE);
                 DrawSphereWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, 12, 12, BLACK);
                 });
-        }
+        }*/
 
         {
             auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform, c_Vector>();
@@ -265,6 +272,8 @@ int main()
                 DrawCylinder(Vector3(0, i, 0) / 100, 0.1f, 0.1f, 0.1f, 20, BLACK);
             }
         }
+
+        scene.DrawScene(renderer);
 
         EndMode3D();
 

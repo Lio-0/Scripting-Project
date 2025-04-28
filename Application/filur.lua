@@ -9,6 +9,7 @@ function filur:OnUpdate(delta)
 	local health = scene.GetComponent(self.ID, "health")
 
 	health = health - 1
+
 	transform.position.x = transform.position.x + delta
 
 	-- 32 = Space
@@ -20,6 +21,9 @@ function filur:OnUpdate(delta)
 			transform.position.y = 0
 		end
 	end
+
+	transform.rotation.x = transform.rotation.x + delta * 100;
+
 
 	scene.SetComponent(self.ID, "health", health)
 	scene.SetComponent(self.ID, "transform", transform)

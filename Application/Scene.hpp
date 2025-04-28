@@ -4,6 +4,7 @@
 #include "lua.hpp"
 #include "System.hpp"
 #include <vector>
+#include "Renderer.hpp"
 
 class Scene
 {
@@ -24,6 +25,7 @@ public:
 	int CreateEntity();
 	bool IsEntity(int entity);
 	void RemoveEntity(int entity);
+	void DrawScene(Renderer& renderer);
 
 	//Systems
 
