@@ -6,6 +6,11 @@ struct c_Vector {
     float x, y, z;
 };
 
+//struct c_Velocity {
+//
+//    float x, y, z;
+//};
+
 struct c_Transform {
     c_Vector position, rotation, scale;
 };

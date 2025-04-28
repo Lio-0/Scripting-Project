@@ -8,6 +8,7 @@
 #include "raymath.h"
 #include "entt.hpp"
 #include "Scene.hpp"
+#include "LuaInput.hpp"
 
 #define MAX_COLUMNS 10
 
@@ -43,10 +44,13 @@ int main()
 
 	////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
 	luaL_openlibs(L);
-
+    LuaInput input(L);
     Scene scene(L);
     Scene::lua_openscene(L, &scene);
+
     scene.CreateSystem<BehaviourSystem>(L);
+
+    luaL_dofile(L, "initLevel.lua");
 
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
@@ -87,19 +91,8 @@ int main()
 	float heights[MAX_COLUMNS] = { 0 };
 	Vector3 positions[MAX_COLUMNS] = { 0 };
 	Color colors[MAX_COLUMNS] = { 0 };
-    Vector3 playerSize = { 0.8f, 1.8f, 0.8f };
 
-    Vector3 previousPlayerPosition = { 0.0f, 1.0f, 2.0f };
-    Vector3 playerPosition = { 0.0f, 1.0f, 2.0f };
-    Vector3 playerSpeed = { 0, 0, 0 };
     Vector3 lookDirection = { 0, 0, 1.0f };
-
-    bool collisionX = false;
-    bool collisionY = false;
-    bool collisionZ = false;
-    bool airborne = false;
-
-
 
 	for (int i = 0; i < MAX_COLUMNS; i++)
 	{
@@ -123,38 +116,6 @@ int main()
         lookDirection = Vector3Normalize(camera.target - camera.position);
         camera.target = camera.position + lookDirection;
 
-        if (IsKeyDown(KEY_W))
-        {
-            playerSpeed.x += Vector3Scale(lookDirection, (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).x;
-            playerSpeed.z += Vector3Scale(lookDirection, (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).z;
-
-        }
-        if (IsKeyDown(KEY_S))
-        {
-            
-            playerSpeed.x -= Vector3Scale(lookDirection, (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).x;
-            playerSpeed.z -= Vector3Scale(lookDirection, (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).z;
-
-
-        }
-        if (IsKeyDown(KEY_A))
-        {
-            playerSpeed.x += Vector3Scale(Vector3RotateByAxisAngle(lookDirection, { 0, 1, 0 }, 90), (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).x;
-            playerSpeed.z += Vector3Scale(Vector3RotateByAxisAngle(lookDirection, { 0, 1, 0 }, 90), (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).z;
-
-        }
-        if (IsKeyDown(KEY_D))
-        {
-            playerSpeed.x -= Vector3Scale(Vector3RotateByAxisAngle(lookDirection, { 0, 1, 0 }, 90), (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).x;
-            playerSpeed.z -= Vector3Scale(Vector3RotateByAxisAngle(lookDirection, { 0, 1, 0 }, 90), (0.5f + IsKeyDown(KEY_LEFT_SHIFT))).z;
-
-        }
-        if (IsKeyDown(KEY_SPACE) && !airborne)
-        {
-            playerSpeed.y += 30.0f;
-            airborne = true;
-        }
-
         if (IsKeyDown(KEY_ONE))
         {
             scene.CreateSystem<PoisonSystem>(600);
@@ -172,7 +133,7 @@ int main()
             scene.CreateSystem<SpawnPoisonSystem>(600);
         }
 
-        if (IsKeyDown(KEY_FIVE))
+        if (IsKeyPressed(KEY_FIVE))
         {
             if (luaL_dofile(L, "createFilur.lua") != LUA_OK)
             {
@@ -181,142 +142,6 @@ int main()
         }
 
         scene.UpdateSystems(GetFrameTime());
-
-        playerSpeed.x *= 0.9f;
-        playerSpeed.z *= 0.9f;
-        playerSpeed.y -= 2.0f;
-
-        if (playerSpeed.y <= -50.0f)
-            playerSpeed.y = -50.0f;
-
-        playerPosition = Vector3Add(playerPosition, Vector3Scale(playerSpeed, GetFrameTime()));
-
-        if (playerPosition.y < 1.0f)
-        {
-            playerSpeed.y = 0.0f;
-            playerPosition.y = 1.0f;
-            airborne = false;
-        }
-
-
-        for (size_t i = 0; i < MAX_COLUMNS; i++)
-        {
-            if (CheckCollisionBoxes(
-                BoundingBox{
-                Vector3 {
-                    playerPosition.x - playerSize.x / 2,
-                        previousPlayerPosition.y - playerSize.y / 2,
-                        previousPlayerPosition.z - playerSize.z / 2
-                    },
-                    Vector3 {
-                    playerPosition.x + playerSize.x / 2,
-                        previousPlayerPosition.y + playerSize.y / 2,
-                        previousPlayerPosition.z + playerSize.z / 2
-                    }
-                },
-                BoundingBox{
-                Vector3 {
-                    float(positions[i].x - 1.0f),
-                    float(positions[i].y - 0.5f),
-                    float(positions[i].z - 1.0f)
-                },
-                Vector3 {
-                    float(positions[i].x + 1.0f),
-                    float(positions[i].y + 0.5f),
-                    float(positions[i].z + 1.0f)
-                }
-                })) 
-            {
-                playerSpeed.x *= 0.2f;
-                collisionX = true;
-            }
-
-            if (CheckCollisionBoxes(
-                BoundingBox{
-                Vector3 {
-                previousPlayerPosition.x - playerSize.x / 2,
-                    previousPlayerPosition.y - playerSize.y / 2,
-                    playerPosition.z - playerSize.z / 2
-                },
-                Vector3 {
-                previousPlayerPosition.x + playerSize.x / 2,
-                    previousPlayerPosition.y + playerSize.y / 2,
-                    playerPosition.z + playerSize.z / 2
-                }
-                },
-                BoundingBox{
-                Vector3 {
-                    float(positions[i].x - 1.0f),
-                    float(positions[i].y - 0.5f),
-                    float(positions[i].z - 1.0f)
-                },
-                    Vector3 {
-                    float(positions[i].x + 1.0f),
-                    float(positions[i].y + 0.5f),
-                    float(positions[i].z + 1.0f)
-                }
-                })) 
-            {
-                playerSpeed.z *= 0.2f;
-                collisionZ = true;
-            }
-
-            if (CheckCollisionBoxes(
-                BoundingBox{
-                Vector3 {
-                previousPlayerPosition.x - playerSize.x / 2,
-                    playerPosition.y - playerSize.y / 2,
-                    previousPlayerPosition.z - playerSize.z / 2
-                },
-                Vector3 {
-                previousPlayerPosition.x + playerSize.x / 2,
-                    playerPosition.y + playerSize.y / 2,
-                    previousPlayerPosition.z + playerSize.z / 2
-                }
-                },
-                BoundingBox{
-                Vector3 {
-                    float(positions[i].x - 1.0f),
-                    float(positions[i].y - 0.5f),
-                    float(positions[i].z - 1.0f)
-                },
-                    Vector3 {
-                    float(positions[i].x + 1.0f),
-                    float(positions[i].y + 0.5f),
-                    float(positions[i].z + 1.0f)
-                }
-                }))
-            {
-                collisionY = true;
-                if (playerSpeed.y < 0)
-                    airborne = false;
-                else
-                    playerSpeed.y = 0;
-                playerSpeed.y *= 0.2f;
-            }
-        }
-        
-
-
-
-        if (collisionX)
-            playerPosition.x = previousPlayerPosition.x;
-        else
-            previousPlayerPosition.x = playerPosition.x;
-
-        if (collisionZ)
-            playerPosition.z = previousPlayerPosition.z;
-        else
-            previousPlayerPosition.z = playerPosition.z;
-        if (collisionY)
-            playerPosition.y = previousPlayerPosition.y;
-        else
-            previousPlayerPosition.y = playerPosition.y;
-
-        collisionX = false;
-        collisionZ = false;
-        collisionY = false;
-
 
         // Switch camera projection
         if (IsKeyPressed(KEY_P))
@@ -395,11 +220,6 @@ int main()
             DrawCubeWires(positions[i], 2.0f, heights[i], 2.0f, BLACK);
         }
 
-        // Draw player cube
-        DrawCube(playerPosition, playerSize.x, playerSize.y, playerSize.z, PURPLE);
-        DrawCubeWires(playerPosition, playerSize.x, playerSize.y, playerSize.z, DARKPURPLE);
-
-
         {
             auto view = scene.GetRegistry()->view<c_Transform, c_Poison>();
 
@@ -420,11 +240,20 @@ int main()
         }
 
         {
-            auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform>();
+            auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform>(entt::exclude<c_Vector>);
 
             view.each([](const c_Behaviour& behaviour, const c_Transform& transform) {
                 DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, BEIGE);
                 DrawSphereWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, 12, 12, BLACK);
+                });
+        }
+
+        {
+            auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform, c_Vector>();
+
+            view.each([](const c_Behaviour& behaviour, const c_Transform& transform, const c_Vector& vector) {
+                DrawCylinder(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.25f, 0.25f, 1, 32, PINK);
+                DrawCylinderWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.25f, 0.25f, 1, 8, BLACK);
                 });
         }
 
@@ -455,10 +284,6 @@ int main()
         DrawRectangleLines(600, 5, 195, 100, BLUE);
 
         DrawText("Camera status:", 610, 15, 10, BLACK);
-        DrawText(TextFormat("- Mode: %s", (cameraMode == CAMERA_FREE) ? "FREE" :
-            (cameraMode == CAMERA_FIRST_PERSON) ? "FIRST_PERSON" :
-            (cameraMode == CAMERA_THIRD_PERSON) ? "THIRD_PERSON" :
-            (cameraMode == CAMERA_ORBITAL) ? "ORBITAL" : "CUSTOM"), 610, 30, 10, BLACK);
         DrawText(TextFormat("- Projection: %s", (camera.projection == CAMERA_PERSPECTIVE) ? "PERSPECTIVE" :
             (camera.projection == CAMERA_ORTHOGRAPHIC) ? "ORTHOGRAPHIC" : "CUSTOM"), 610, 45, 10, BLACK);
         DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", camera.position.x, camera.position.y, camera.position.z), 610, 60, 10, BLACK);

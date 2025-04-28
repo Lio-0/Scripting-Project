@@ -155,6 +155,15 @@ int Scene::lua_SetComponent(lua_State* L)
 		float value = lua_tonumber(L, 3);
 		scene->SetComponent<c_Health>(entity, value);
 	}
+	else if (type == "vector")
+	{
+		if (!lua_istable(L, 3)) {
+			return luaL_error(L, "Expected table for vector");
+		}
+
+		c_Vector vector = lua_getvector(L, 3);
+		scene->SetComponent<c_Vector>(entity, vector);
+	}
 	else if (type == "poison")
 	{
 		float tickDamage = lua_tonumber(L, 3);

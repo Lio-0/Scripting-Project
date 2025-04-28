@@ -159,12 +159,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameConsole.cpp" />
+    <ClCompile Include="LuaInput.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.hpp" />
     <ClInclude Include="GameConsole.hpp" />
+    <ClInclude Include="LuaInput.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="System.hpp" />
   </ItemGroup>

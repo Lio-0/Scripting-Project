@@ -125,3 +125,25 @@ public:
 		return false;
 	}
 };
+
+//class VelocitySystem : public System
+//{
+//	lua_State* L;
+//
+//public:
+//	VelocitySystem(lua_State* L) : L(L) {}
+//
+//	bool OnUpdate(entt::registry& registry, float delta) final
+//	{
+//		auto view = registry.view<c_Velocity, c_Transform>();
+//
+//		view.each([&](c_Velocity& velocity, c_Transform& transform)
+//			{
+//				transform.position.x += velocity.x * delta;
+//				transform.position.y += velocity.y * delta;
+//				transform.position.z += velocity.z * delta;
+//			});
+//
+//		return false;
+//	}
+//};
