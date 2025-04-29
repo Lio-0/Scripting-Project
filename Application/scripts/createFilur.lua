@@ -22,5 +22,5 @@ local transform = {
 
 scene.SetComponent(entity, "health", 120)
 scene.SetComponent(entity, "transform", transform)
-scene.SetComponent(entity, "behaviour", "filur.lua")
+scene.SetComponent(entity, "behaviour", "scripts/filur.lua")
 scene.SetComponent(entity, "visual", "cube", "", true) 

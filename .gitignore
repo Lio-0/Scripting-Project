@@ -403,3 +403,4 @@ FodyWeavers.xsd
 bin/
 int/
 lib/
+!Application/assets/*

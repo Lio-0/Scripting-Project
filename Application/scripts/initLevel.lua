@@ -29,4 +29,4 @@ local vector = {
 
 scene.SetComponent(entity, "vector", vector)
 scene.SetComponent(entity, "transform", transform)
-scene.SetComponent(entity, "behaviour", "playerController.lua")
+scene.SetComponent(entity, "behaviour", "scripts/playerController.lua")

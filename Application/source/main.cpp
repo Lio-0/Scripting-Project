@@ -51,7 +51,7 @@ int main()
 
     scene.CreateSystem<BehaviourSystem>(L);
 
-    luaL_dofile(L, "initLevel.lua");
+    luaL_dofile(L, "scripts/initLevel.lua");
 
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
@@ -109,7 +109,7 @@ int main()
 	SetTargetFPS(60);
 
     Renderer renderer;
-    Model cubeModel = LoadModel("cube.obj");
+    Model cubeModel = LoadModel("assets/cube.obj");
     renderer.LoadModel("cube", cubeModel);
 
 	while (!WindowShouldClose())
@@ -140,7 +140,7 @@ int main()
 
         if (IsKeyPressed(KEY_FIVE))
         {
-            if (luaL_dofile(L, "createFilur.lua") != LUA_OK)
+            if (luaL_dofile(L, "scripts/createFilur.lua") != LUA_OK)
             {
                 GameConsole::DumpError(L);
             }
