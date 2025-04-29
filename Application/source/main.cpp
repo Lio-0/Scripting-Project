@@ -45,6 +45,7 @@ int main()
 
 	////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
 	luaL_openlibs(L);
+
     LuaInput input(L);
     Scene scene(L);
     Scene::lua_openscene(L, &scene);
@@ -187,7 +188,6 @@ int main()
                 // Camera PRO usage example (EXPERIMENTAL)
                 // This new camera function allows custom movement/rotation values to be directly provided
                 // as input parameters, with this approach, rcamera module is internally independent of raylib inputs
-
 
         UpdateCameraPro(&camera,
             Vector3{

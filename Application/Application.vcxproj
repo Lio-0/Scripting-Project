@@ -175,6 +175,7 @@
   <ItemGroup>
     <None Include="scripts\createFilur.lua" />
     <None Include="scripts\filur.lua" />
+    <None Include="scripts\fpCamera.lua" />
     <None Include="scripts\initLevel.lua" />
     <None Include="scripts\playerController.lua" />
     <None Include="scripts\transform.lua" />

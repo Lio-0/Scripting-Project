@@ -13,6 +13,11 @@ LuaInput::LuaInput(lua_State* L) : m_luaState(L)
 		{"IsKeyPressedRepeat", lua_IsKeyPressedRepeat},
 		{"IsKeyReleased", lua_IsKeyReleased},
 		{"IsKeyUp", lua_IsKeyUp},
+		{"GetMousePosition", lua_GetMousePosition},
+		{"GetMouseDelta", lua_GetMouseDelta},
+		{"GetMouseWheelMove", lua_GetMouseWheelMove},
+		{"IsMouseButtonUp", lua_IsMouseButtonUp},
+		{"IsMouseButtonDown", lua_IsMouseButtonDown},
 		{NULL, NULL}
 	};
 
@@ -70,6 +75,53 @@ int LuaInput::lua_IsKeyUp(lua_State* L)
 	int key = lua_tointeger(L, 1);
 
 	lua_pushboolean(L, IsKeyUp(key));
+
+	return 1;
+}
+
+int LuaInput::lua_GetMousePosition(lua_State* L)
+{
+	Vector2 pos = GetMousePosition();
+
+	lua_pushnumber(L, pos.x);
+	lua_pushnumber(L, pos.y);
+
+	return 2;
+}
+
+int LuaInput::lua_GetMouseDelta(lua_State* L)
+{
+	Vector2 delta = GetMouseDelta();
+
+	lua_pushnumber(L, delta.x);
+	lua_pushnumber(L, delta.y);
+
+	return 2;
+}
+
+int LuaInput::lua_GetMouseWheelMove(lua_State* L)
+{
+	float amount = GetMouseWheelMove();
+
+	lua_pushnumber(L, amount);
+
+	return 1;
+}
+
+int LuaInput::lua_IsMouseButtonUp(lua_State* L)
+{
+	int button = lua_tointeger(L, 1);
+
+	lua_pushboolean(L, IsMouseButtonUp(button));
+
+	return 1;
+}
+
+int LuaInput::lua_IsMouseButtonDown(lua_State* L)
+{
+	int button = lua_tointeger(L, 1);
+
+	lua_pushboolean(L, IsMouseButtonDown(button));
 
 	return 1;
 }

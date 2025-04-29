@@ -99,6 +99,20 @@ void lua_pushtransform(lua_State* L, const c_Transform& transform)
 	lua_setfield(L, -2, "scale");
 }
 
+void lua_pushcamera(lua_State* L, const c_Camera& c)
+{
+	lua_newtable(L);
+
+	lua_pushvector(L, c.camera.target);
+	lua_setfield(L, -2, "targetDir");
+
+	lua_pushvector(L, c.camera.position);
+	lua_setfield(L, -2, "position");
+
+	lua_pushvector(L, c.camera.up);
+	lua_setfield(L, -2, "up");
+}
+
 c_Vector lua_getvector(lua_State* L, int index)
 {
 	c_Vector vec;
@@ -134,6 +148,25 @@ c_Transform lua_totransform(lua_State* L, int index)
 	lua_pop(L, 1);
 
 	return t;
+}
+
+c_Camera lua_tocamera(lua_State* L, int index)
+{
+	c_Camera c;
+
+	lua_getfield(L, index, "target");
+	c.camera.target = lua_getvector(L, lua_gettop(L));
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "position");
+	c.camera.position = lua_getvector(L, lua_gettop(L));
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "up");
+	c.camera.up = lua_getvector(L, lua_gettop(L));
+	lua_pop(L, 1);
+
+	return c;
 }
 
 int Scene::lua_CreateEntity(lua_State* L)
@@ -199,6 +232,15 @@ int Scene::lua_SetComponent(lua_State* L)
 		const char* textureName = lua_tostring(L, 4);
 		bool isRendered = lua_toboolean(L, 5);
 		scene->SetComponent<c_Visual>(entity, modelName, textureName, isRendered);
+	}
+	else if (type == "camera")
+	{
+		if (!lua_istable(L, 3)) {
+			return luaL_error(L, "Expected table for camera");
+		}
+
+		c_Camera camera = lua_tocamera(L, 3);
+		scene->SetComponent<c_Camera>(entity, camera);
 	}
 
 	return 0;
@@ -294,6 +336,12 @@ int Scene::lua_GetComponent(lua_State* L)
 	{
 		c_Poison& poison = scene->GetComponent<c_Poison>(entity);
 		lua_pushnumber(L, poison.TickDamage);
+		return 1;
+	}
+	else if (type == "camera" && scene->HasComponents<c_Poison>(entity))
+	{
+		c_Camera& camera = scene->GetComponent<c_Camera>(entity);
+		lua_pushcamera(L, camera);
 		return 1;
 	}
 

@@ -7,6 +7,7 @@ function playerController:OnUpdate(delta)
 
 	local transform = scene.GetComponent(self.ID, "transform")
 	local velocity = scene.GetComponent(self.ID, "vector")
+	local camera = scene.GetComponent(self.ID, "camera")
 
 	if input.IsKeyDown(87) then -- W
 		velocity.x = velocity.x + delta * 100
@@ -37,8 +38,13 @@ function playerController:OnUpdate(delta)
 	transform.position.y = transform.position.y + velocity.y * delta
 	transform.position.z = transform.position.z + velocity.z * delta
 
+	camera.position.x = transform.position.x
+	camera.position.y = transform.position.y
+	camera.position.z = transform.position.z
+
 	scene.SetComponent(self.ID, "transform", transform)
 	scene.SetComponent(self.ID, "vector", velocity)
+	scene.SetComponent(self.ID, "camera", camera)
 end
 
 return playerController

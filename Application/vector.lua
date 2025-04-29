@@ -68,6 +68,10 @@ function vector:length()
     return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
 end
 
+function vector:normalize()
+    return self/self.length
+end
+
 return setmetatable(vector, {
     __call = function(_, ...)
         return vector.new(...)
