@@ -61,6 +61,12 @@ void Renderer::Draw(const std::vector<RenderData>& objects)
                 // Assuming the model has at least one material and one map
                 model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureIt->second;
             }
+            else
+            {
+                auto baseText = m_textures.find("base_texture");
+                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = baseText->second;
+            }
+                
             
             DrawModelEx(model, obj.position, {0, 1.0f, 0}, obj.rotation.x, obj.scale, WHITE);
         }

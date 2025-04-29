@@ -69,7 +69,7 @@ int main()
         c_Vector scale = { 1.0f, 1.0f, 1.0f };
         c_Transform transform = { pos, rot, scale };
         scene.SetComponent<c_Transform>(entity, transform);
-        scene.SetComponent<c_Visual>(entity, "cube", "", true);
+        scene.SetComponent<c_Visual>(entity, "cube", "grey_texture", true);
 
     }
 
@@ -108,9 +108,19 @@ int main()
 
 	SetTargetFPS(60);
 
+
+    //Models
     Renderer renderer;
     Model cubeModel = LoadModel("assets/cube.obj");
     renderer.LoadModel("cube", cubeModel);
+    Model ratModel = LoadModel("assets/rat.obj");
+    renderer.LoadModel("rat", ratModel);
+
+    //Textures
+    Texture2D greyTexture = LoadTexture("assets/grey_texture.png");
+    renderer.LoadTexture("grey_texture", greyTexture);
+    Texture2D baseTexture = LoadTexture("assets/base_texture.png");
+    renderer.LoadTexture("base_texture", baseTexture);
 
 	while (!WindowShouldClose())
 	{
