@@ -49,3 +49,7 @@ struct c_Visual
     std::string textureName;
     bool isRendered;
 };
+
+struct c_Clickable {};
+
+struct c_Selected {};

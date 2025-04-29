@@ -56,7 +56,7 @@ int main()
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
 
-    for (size_t i = 0; i < 100; i++)
+    for (size_t i = 0; i < 1; i++)
     {
         //Create a new entity.
         auto entity = scene.CreateEntity();
@@ -66,7 +66,7 @@ int main()
 
         c_Vector pos = { float(i) / 10, 0.0f, float(i % 10) / 10.0f};
         c_Vector rot = { 0.0f, 0.0f, 0.0f };
-        c_Vector scale = { 1.0f, 1.0f, 1.0f };
+        c_Vector scale = { 2.0f, 0.4f, 2.0f };
         c_Transform transform = { pos, rot, scale };
         scene.SetComponent<c_Transform>(entity, transform);
         scene.SetComponent<c_Visual>(entity, "cube", "grey_texture", true);
