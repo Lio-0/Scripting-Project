@@ -19,4 +19,10 @@ private:
 	static int lua_IsKeyPressedRepeat(lua_State* L);
 	static int lua_IsKeyReleased(lua_State* L);
 	static int lua_IsKeyUp(lua_State* L);
+
+	static int lua_GetMousePosition();
+	static int lua_GetMouseDelta();
+	static int lua_GetMouseWheelMove();
+	static int lua_IsMouseButtonUp();
+	static int lua_IsMouseButtonDown();
 };
