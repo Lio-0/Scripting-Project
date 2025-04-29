@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LuaLib/src;$(SolutionDir)External/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Application/headers;$(SolutionDir)LuaLib/src;$(SolutionDir)External/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -146,7 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LuaLib/src;$(SolutionDir)External/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Application/headers;$(SolutionDir)LuaLib/src;$(SolutionDir)External/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,19 +158,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GameConsole.cpp" />
-    <ClCompile Include="LuaInput.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Scene.cpp" />
+    <ClInclude Include="headers\Components.hpp" />
+    <ClInclude Include="headers\GameConsole.hpp" />
+    <ClInclude Include="headers\LuaInput.hpp" />
+    <ClInclude Include="headers\Renderer.hpp" />
+    <ClInclude Include="headers\Scene.hpp" />
+    <ClInclude Include="headers\System.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Components.hpp" />
-    <ClInclude Include="GameConsole.hpp" />
-    <ClInclude Include="LuaInput.hpp" />
-    <ClInclude Include="Renderer.hpp" />
-    <ClInclude Include="Scene.hpp" />
-    <ClInclude Include="System.hpp" />
+    <ClCompile Include="source\GameConsole.cpp" />
+    <ClCompile Include="source\LuaInput.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\Renderer.cpp" />
+    <ClCompile Include="source\Scene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scripts\createFilur.lua" />
+    <None Include="scripts\filur.lua" />
+    <None Include="scripts\initLevel.lua" />
+    <None Include="scripts\playerController.lua" />
+    <None Include="scripts\transform.lua" />
+    <None Include="scripts\vector.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
