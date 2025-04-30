@@ -4,6 +4,12 @@
 #include "GameConsole.hpp"
 #include "Scene.hpp"
 
+#include <vector>
+#include <algorithm>
+
+#include "raylib.h"  
+#include "raymath.h" 
+
 
 class System
 {
@@ -126,6 +132,106 @@ public:
 	}
 };
 
+class SelectionSystem : public System
+{
+	lua_State* L;
+    Vector2 m_initialClickPos;
+    bool m_isDragging = false;
+
+public:
+	SelectionSystem(lua_State* lua) : L(lua) {}
+
+    bool OnUpdate(entt::registry& registry, float delta) override
+    {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            m_initialClickPos = GetMousePosition();
+
+            // Check if we're clicking on empty space to deselect
+            bool clickedOnEntity = false;
+
+            auto view = registry.view<const c_Transform, const c_Collision, const c_Clickable>();
+            for (auto [entity, transform, collision] : view.each()) {
+                Rectangle rect = {
+                    transform.position.x,
+                    transform.position.y,
+                    collision.width,
+                    collision.height
+                };
+
+                if (CheckCollisionPointRec(m_initialClickPos, rect)) {
+                    clickedOnEntity = true;
+
+                    // For multi-selection with shift
+                    if (!IsKeyDown(KEY_LEFT_SHIFT)) { 
+                        auto selectedView = registry.view<c_Selected>();
+                        registry.remove<c_Selected>(selectedView.begin(), selectedView.end());
+                    }
+
+                    // Toggle selection
+                    if (registry.all_of<c_Selected>(entity)) {
+                        registry.remove<c_Selected>(entity);
+                    }
+                    else {
+                        registry.emplace<c_Selected>(entity);
+                    }
+
+                    break;
+                }
+            }
+
+            // Clicked on empty space - deselect all
+            if (!clickedOnEntity && !IsKeyDown(KEY_LEFT_SHIFT)) {
+                auto selectedView = registry.view<c_Selected>();
+                registry.remove<c_Selected>(selectedView.begin(), selectedView.end());
+            }
+        }
+
+        return false;
+    }
+};
+
+class DraggingSystem : public System
+{
+	lua_State* L;
+    Vector2 m_dragOffset;
+    bool m_isDragging = false;
+
+public:
+	DraggingSystem(lua_State* lua) : L(lua) {}
+
+    bool OnUpdate(entt::registry& registry, float delta) override
+    {
+        auto view = registry.view<c_Selected, c_Transform>();
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !registry.view<c_Selected>().empty()) {
+            // Store initial offset for smooth dragging
+            Vector2 mousePos = GetMousePosition();
+            view.each([&](entt::entity entity, c_Transform& transform) {
+                m_dragOffset = {
+                    transform.position.x - mousePos.x,
+                    transform.position.y - mousePos.y
+                };
+                m_isDragging = true;
+                return; // Just need the first entity for offset
+                });
+        }
+
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+            m_isDragging = false;
+        }
+
+        if (m_isDragging && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            Vector2 mousePos = GetMousePosition();
+
+            view.each([&](entt::entity entity, c_Transform& transform) {
+                transform.position.x = mousePos.x + m_dragOffset.x;
+                transform.position.y = mousePos.y + m_dragOffset.y;
+                });
+        }
+
+        return false;
+    }
+};
 //class VelocitySystem : public System
 //{
 //	lua_State* L;

@@ -50,6 +50,8 @@ int main()
     Scene::lua_openscene(L, &scene);
 
     scene.CreateSystem<BehaviourSystem>(L);
+    scene.CreateSystem<SelectionSystem>(L);
+    scene.CreateSystem<DraggingSystem>(L);
 
     luaL_dofile(L, "scripts/initLevel.lua");
 
