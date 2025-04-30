@@ -49,8 +49,9 @@ int main()
     LuaInput input(L);
     Scene scene(L);
     Scene::lua_openscene(L, &scene);
-
+    Camera camera;
     scene.CreateSystem<BehaviourSystem>(L);
+    scene.CreateSystem<CameraSystem>(&camera);
 
     luaL_dofile(L, "scripts/initLevel.lua");
 
@@ -81,7 +82,7 @@ int main()
 	InitWindow(screenWidth, screenHeight, "Jonas Jump");
 
 	// Define the camera to look into our 3d world (position, target, up vector)
-	Camera camera = { 0 };
+	camera = { 0 };
 	camera.position = { 0.0f, 2.0f, 4.0f };    // Camera position
 	camera.target = { 0.0f, 0.0f, 0.0f };      // Camera looking at point
 	camera.up = { 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
@@ -188,22 +189,22 @@ int main()
                 // Camera PRO usage example (EXPERIMENTAL)
                 // This new camera function allows custom movement/rotation values to be directly provided
                 // as input parameters, with this approach, rcamera module is internally independent of raylib inputs
-
-        UpdateCameraPro(&camera,
-            Vector3{
-                (IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-                (IsKeyDown(KEY_DOWN))*0.1f,
-                (IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-                (IsKeyDown(KEY_LEFT))*0.1f,
-                (IsKeyDown(KEY_ENTER)) * 0.1f-   // Move right-left
-                (IsKeyDown(KEY_RIGHT_SHIFT)) * 0.1f                                 // Move up-down
-            },
-            Vector3{
-                GetMouseDelta().x*0.05f,                            // Rotation: yaw
-                GetMouseDelta().y*0.05f,                            // Rotation: pitch
-                0.0f                                                // Rotation: roll
-            },
-            0);                              // Move to target (zoom)
+        //UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+        //UpdateCameraPro(camera,
+        //    Vector3{
+        //        (IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
+        //        (IsKeyDown(KEY_DOWN))*0.1f,
+        //        (IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
+        //        (IsKeyDown(KEY_LEFT))*0.1f,
+        //        (IsKeyDown(KEY_ENTER)) * 0.1f-   // Move right-left
+        //        (IsKeyDown(KEY_RIGHT_SHIFT)) * 0.1f                                 // Move up-down
+        //    },
+        //    Vector3{
+        //        GetMouseDelta().x*0.05f,                            // Rotation: yaw
+        //        GetMouseDelta().y*0.05f,                            // Rotation: pitch
+        //        0.0f                                                // Rotation: roll
+        //    },
+        //    0);                              // Move to target (zoom)
 
         //----------------------------------------------------------------------------------
 

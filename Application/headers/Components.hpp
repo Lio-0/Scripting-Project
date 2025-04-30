@@ -7,7 +7,9 @@ struct c_Vector {
 };
 
 struct c_Camera {
-    Camera camera;
+    int ID;
+    c_Vector positionOffset;
+    c_Vector target;
 };
 
 //struct c_Velocity {

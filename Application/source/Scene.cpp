@@ -99,20 +99,6 @@ void lua_pushtransform(lua_State* L, const c_Transform& transform)
 	lua_setfield(L, -2, "scale");
 }
 
-void lua_pushcamera(lua_State* L, const c_Camera& c)
-{
-	lua_newtable(L);
-
-	lua_pushvector(L, c.camera.target);
-	lua_setfield(L, -2, "targetDir");
-
-	lua_pushvector(L, c.camera.position);
-	lua_setfield(L, -2, "position");
-
-	lua_pushvector(L, c.camera.up);
-	lua_setfield(L, -2, "up");
-}
-
 c_Vector lua_getvector(lua_State* L, int index)
 {
 	c_Vector vec;
@@ -150,25 +136,6 @@ c_Transform lua_totransform(lua_State* L, int index)
 	return t;
 }
 
-c_Camera lua_tocamera(lua_State* L, int index)
-{
-	c_Camera c;
-
-	lua_getfield(L, index, "target");
-	c.camera.target = lua_getvector(L, lua_gettop(L));
-	lua_pop(L, 1);
-
-	lua_getfield(L, index, "position");
-	c.camera.position = lua_getvector(L, lua_gettop(L));
-	lua_pop(L, 1);
-
-	lua_getfield(L, index, "up");
-	c.camera.up = lua_getvector(L, lua_gettop(L));
-	lua_pop(L, 1);
-
-	return c;
-}
-
 int Scene::lua_CreateEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
@@ -181,7 +148,7 @@ int Scene::lua_SetComponent(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
 
-	int entity = lua_tointeger(L, 1);
+	int entity = (int)lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
 
 	if (type == "health")
@@ -235,12 +202,10 @@ int Scene::lua_SetComponent(lua_State* L)
 	}
 	else if (type == "camera")
 	{
-		if (!lua_istable(L, 3)) {
-			return luaL_error(L, "Expected table for camera");
-		}
-
-		c_Camera camera = lua_tocamera(L, 3);
-		scene->SetComponent<c_Camera>(entity, camera);
+		int ID = (int)lua_tointeger(L, 3);
+		c_Vector offset = lua_getvector(L, 4);
+		c_Vector target = lua_getvector(L, 5);
+		scene->SetComponent<c_Camera>(entity, ID, offset, target);
 	}
 
 	return 0;
@@ -258,7 +223,7 @@ int Scene::lua_GetEntityCount(lua_State* L)
 int Scene::lua_IsEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
-	int entity = lua_tointeger(L, 1);
+	int entity = (int)lua_tointeger(L, 1);
 	bool alive = scene->IsEntity(entity);
 	lua_pushboolean(L, alive);
 
@@ -268,7 +233,7 @@ int Scene::lua_IsEntity(lua_State* L)
 int Scene::lua_RemoveEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
-	int entity = lua_tointeger(L, 1);
+	int entity = (int)lua_tointeger(L, 1);
 	scene->RemoveEntity(entity);
 
 	return 0;
@@ -277,7 +242,7 @@ int Scene::lua_RemoveEntity(lua_State* L)
 int Scene::lua_HasComponent(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
-	int entity = lua_tointeger(L, 1);
+	int entity = (int)lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
 	bool hasComponent = true;
 
@@ -305,7 +270,7 @@ int Scene::lua_GetComponent(lua_State* L)
 		return 1;
 	}
 
-	int entity = lua_tointeger(L, 1);
+	int entity = (int)lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
 
 	if (!scene->IsEntity(entity))
@@ -338,10 +303,21 @@ int Scene::lua_GetComponent(lua_State* L)
 		lua_pushnumber(L, poison.TickDamage);
 		return 1;
 	}
-	else if (type == "camera" && scene->HasComponents<c_Poison>(entity))
+	else if (type == "camera" && scene->HasComponents<c_Camera>(entity))
 	{
 		c_Camera& camera = scene->GetComponent<c_Camera>(entity);
-		lua_pushcamera(L, camera);
+
+		lua_newtable(L);
+
+		lua_pushnumber(L, camera.ID);
+		lua_setfield(L, -2, "ID");
+
+		lua_pushvector(L, camera.positionOffset);
+		lua_setfield(L, -2, "offset");
+
+		lua_pushvector(L, camera.target);
+		lua_setfield(L, -2, "target");
+
 		return 1;
 	}
 

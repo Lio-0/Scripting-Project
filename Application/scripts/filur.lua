@@ -1,12 +1,32 @@
 local filur = {}
 
 function filur:OnCreate()
+	local transform = {
+		position = {
+			x = math.random(-10, 10),
+			y = 0,
+			z = math.random(-10, 10)
+		},
+
+		rotation = {
+			x = 0,
+			y = 0,
+			z = 0
+		},
+
+		scale = {
+			x = 1.0,
+			y = 1.0,
+			z = 1.0
+		}
+	}
+
+	scene.SetComponent(self.ID, "transform", transform)
+	scene.SetComponent(self.ID, "visual", "cube", "", true) 
 end
 
 function filur:OnUpdate(delta)
 	local transform = scene.GetComponent(self.ID, "transform")
-	local health = scene.GetComponent(self.ID, "health")
-	health = health - 1
 
 	transform.position.x = transform.position.x + delta
 
@@ -22,7 +42,6 @@ function filur:OnUpdate(delta)
 
 	transform.rotation.x = transform.rotation.x + delta * 100;
 	
-	scene.SetComponent(self.ID, "health", health)
 	scene.SetComponent(self.ID, "transform", transform)
 end
 

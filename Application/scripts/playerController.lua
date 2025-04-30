@@ -1,10 +1,41 @@
 local playerController = {}
 
 function playerController:OnCreate()
+	local transform = {
+		position = {
+			x = 0,
+			y = 1,
+			z = 0
+		},
+
+		rotation = {
+			x = 0,
+			y = 0,
+			z = 0
+		},
+
+		scale = {
+			x = 0,
+			y = 0,
+			z = 0
+		}
+	}
+
+	local vector = {
+		x = 0,
+		y = 0,
+		z = 0
+	}
+
+	scene.SetComponent(self.ID, "vector", vector)
+
+	vector.y = 0.5;
+
+	scene.SetComponent(self.ID, "camera", 0, vector)
+	scene.SetComponent(self.ID, "transform", transform)
 end
 
 function playerController:OnUpdate(delta)
-
 	local transform = scene.GetComponent(self.ID, "transform")
 	local velocity = scene.GetComponent(self.ID, "vector")
 	local camera = scene.GetComponent(self.ID, "camera")
@@ -35,12 +66,11 @@ function playerController:OnUpdate(delta)
 	velocity.z = velocity.z * 0.9
 
 	transform.position.x = transform.position.x + velocity.x * delta
+	camera.target.x = transform.position.x + velocity.x * delta
 	transform.position.y = transform.position.y + velocity.y * delta
-	transform.position.z = transform.position.z + velocity.z * delta
-
-	camera.position.x = transform.position.x
-	camera.position.y = transform.position.y
-	camera.position.z = transform.position.z
+	camera.target.y = transform.position.y + velocity.y * delta
+	transform.position.z = transform.position.z + velocity.z * delta 
+	camera.target.z = transform.position.z + velocity.z * delta
 
 	scene.SetComponent(self.ID, "transform", transform)
 	scene.SetComponent(self.ID, "vector", velocity)
