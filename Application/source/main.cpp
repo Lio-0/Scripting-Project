@@ -160,7 +160,6 @@ int main()
                 camera.projection = CAMERA_ORTHOGRAPHIC;
                 camera.fovy = 20.0f; // near plane width in CAMERA_ORTHOGRAPHIC
                 
-                
                 /*CameraYaw(&camera, -135 * DEG2RAD, true);
                 CameraPitch(&camera, -45 * DEG2RAD, true, true, false);*/
             }

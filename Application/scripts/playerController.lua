@@ -1,6 +1,11 @@
 local playerController = {}
 
 local vector = require("vector")
+local grounded
+
+local function bton(value)
+ return value == true and 1 or value == false and 0
+end
 
 function playerController:OnCreate()
 	local transform = {
@@ -31,7 +36,7 @@ function playerController:OnCreate()
 
 	scene.SetComponent(self.ID, "vector", vector)
 
-	vector.y = 0.5;
+	vector.y = 0
 
 	scene.SetComponent(self.ID, "camera", 0, vector)
 	scene.SetComponent(self.ID, "transform", transform)
@@ -43,34 +48,50 @@ function playerController:OnUpdate(delta)
 	local velocity = scene.GetComponent(self.ID, "vector")
 	local camera = scene.GetComponent(self.ID, "camera")
 
-
 	local viewDirection = vector(camera.target.x - transform.position.x,
 		camera.target.y - transform.position.y,
 		camera.target.z - transform.position.z)
 	viewDirection = viewDirection:normalize()
 
+	camera.offset = vector(0, 0, 0)
+
+	velocity.x = velocity.x * 0.8
+	velocity.z = velocity.z * 0.8
+
 	if input.IsKeyDown(87) then -- W
-		velocity.x = (velocity.x + delta * 100) * viewDirection.x
-		velocity.z = (velocity.z + delta * 100) * viewDirection.z
+		velocity.x = velocity.x + delta * viewDirection.x * (40 + 60 * bton(input.IsKeyDown(340)))
+		velocity.z = velocity.z + delta * viewDirection.z * (40 + 60 * bton(input.IsKeyDown(340)))
 	end
 	if input.IsKeyDown(83) then -- S
-		velocity.x = (velocity.x - delta * 100) * viewDirection.x
-		velocity.z = (velocity.z - delta * 100) * viewDirection.z
+		velocity.x = velocity.x - delta * viewDirection.x * (50 + 50 * bton(input.IsKeyDown(340)))
+		velocity.z = velocity.z - delta * viewDirection.z * (50 + 50 * bton(input.IsKeyDown(340)))
 	end
 	if input.IsKeyDown(68) then -- A
-		velocity.x = (velocity.x - delta * 100) * viewDirection.x
-		velocity.z = (velocity.z + delta * 100) * viewDirection.z
+		velocity.x = velocity.x - delta * viewDirection.z * math.sin(math.rad(90)) * (50 + 50 * bton(input.IsKeyDown(340)))
+		velocity.z = velocity.z - delta * viewDirection.x * (-math.sin(math.rad(90))) * (50 + 50 * bton(input.IsKeyDown(340)))
 	end
 	if input.IsKeyDown(65) then -- D
-		velocity.x = (velocity.x + delta * 100) * viewDirection.x
-		velocity.z = (velocity.z - delta * 100) * viewDirection.z
+		velocity.x = velocity.x + delta * viewDirection.z * math.sin(math.rad(90)) * (50 + 50 * bton(input.IsKeyDown(340)))
+		velocity.z = velocity.z + delta * viewDirection.x * (-math.sin(math.rad(90))) * (50 + 50 * bton(input.IsKeyDown(340)))
 	end
-	if input.IsKeyPressed(32) then -- Space
-		velocity.y = 10
+	if (input.IsKeyDown(32) and grounded) then -- Space
+		if input.IsKeyPressed(32) or velocity.y < 0 then
+			velocity.y = 0.5
+		end
+
+		velocity.y = velocity.y + 60 * delta
+
+		if velocity.y > 6 then
+			velocity.y = 6
+			grounded = false
+		end
+	end
+
+	if input.IsKeyReleased(32) then
+		grounded = false
 	end
 	
-	velocity.x = velocity.x * 0.9
-	velocity.z = velocity.z * 0.9
+	print(velocity.y)
 
 	transform.position.x = transform.position.x + velocity.x * delta
 	transform.position.y = transform.position.y + velocity.y * delta
@@ -78,8 +99,9 @@ function playerController:OnUpdate(delta)
 
 	if transform.position.y < 0.5 then
 		transform.position.y = 0.5
+		grounded = true
 	else
-		velocity.y = velocity.y - 0.5
+		velocity.y = velocity.y - 10 * delta
 	end
 
 	camera.target.x = transform.position.x + viewDirection.x
