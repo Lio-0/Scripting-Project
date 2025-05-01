@@ -4,6 +4,8 @@
 #include "GameConsole.hpp"
 #include "Scene.hpp"
 #include "raylib.h"
+#include "raymath.h"
+#include <iostream>
 
 class System
 {
@@ -139,9 +141,7 @@ public:
 		auto view = registry.view<c_Camera, c_Transform>();
 
 		c_Camera c;
-		c.positionOffset = { 0,0,0 };
 		c_Transform t;
-		t.position = { 0,0,0 };
 		view.each([&](c_Camera& cam, c_Transform& transform) {
 			if (cam.ID == activeCamID)
 			{
@@ -151,6 +151,7 @@ public:
 			});
 
 		camera->position = { t.position.x + c.positionOffset.x, t.position.y + c.positionOffset.y, t.position.z + c.positionOffset.z };
+		camera->target = { c.target.x, c.target.y, c.target.z };
 
 		UpdateCameraPro(camera,
 			Vector3{0, 0, 0},
@@ -160,6 +161,14 @@ public:
 				0.0f                         // Rotation: roll
 			},
 			0);                              // Move to target (zoom)
+
+		view.each([&](c_Camera& cam, c_Transform& transform)
+			{
+				if (cam.ID == activeCamID)
+				{
+					cam.target = { camera->target.x, camera->target.y, camera->target.z };
+				}
+			});
 
 		return false;
 	}

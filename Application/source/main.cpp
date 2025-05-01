@@ -119,10 +119,6 @@ int main()
         // Update
         //----------------------------------------------------------------------------------
 
-
-        lookDirection = Vector3Normalize(camera.target - camera.position);
-        camera.target = camera.position + lookDirection;
-
         if (IsKeyDown(KEY_ONE))
         {
             scene.CreateSystem<PoisonSystem>(600);
@@ -179,34 +175,6 @@ int main()
                 camera.fovy = 60.0f;
             }
         }
-
-        // Update camera computes movement internally depending on the camera mode
-        // Some default standard keyboard/mouse inputs are hardcoded to simplify use
-        // For advanced camera controls, it's recommended to compute camera movement manually
-        //UpdateCamera(&camera, cameraMode);                  // Update camera
-
-        
-                // Camera PRO usage example (EXPERIMENTAL)
-                // This new camera function allows custom movement/rotation values to be directly provided
-                // as input parameters, with this approach, rcamera module is internally independent of raylib inputs
-        //UpdateCamera(&camera, CAMERA_FIRST_PERSON);
-        //UpdateCameraPro(camera,
-        //    Vector3{
-        //        (IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-        //        (IsKeyDown(KEY_DOWN))*0.1f,
-        //        (IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-        //        (IsKeyDown(KEY_LEFT))*0.1f,
-        //        (IsKeyDown(KEY_ENTER)) * 0.1f-   // Move right-left
-        //        (IsKeyDown(KEY_RIGHT_SHIFT)) * 0.1f                                 // Move up-down
-        //    },
-        //    Vector3{
-        //        GetMouseDelta().x*0.05f,                            // Rotation: yaw
-        //        GetMouseDelta().y*0.05f,                            // Rotation: pitch
-        //        0.0f                                                // Rotation: roll
-        //    },
-        //    0);                              // Move to target (zoom)
-
-        //----------------------------------------------------------------------------------
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -273,7 +241,6 @@ int main()
                 DrawCylinder(Vector3(0, i, 0) / 100, 0.1f, 0.1f, 0.1f, 20, BLACK);
             }
         }
-
         scene.DrawScene(renderer);
 
         EndMode3D();

@@ -69,7 +69,7 @@ function vector:length()
 end
 
 function vector:normalize()
-    return self/self.length
+    return vector(self.x /self:length(), self.y /self:length(), self.z /self:length())
 end
 
 return setmetatable(vector, {
