@@ -45,11 +45,13 @@ int main()
 
 	////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
 	luaL_openlibs(L);
+
     LuaInput input(L);
     Scene scene(L);
     Scene::lua_openscene(L, &scene);
-
+    Camera camera;
     scene.CreateSystem<BehaviourSystem>(L);
+    scene.CreateSystem<CameraSystem>(&camera);
 
     luaL_dofile(L, "scripts/initLevel.lua");
 
@@ -80,7 +82,7 @@ int main()
 	InitWindow(screenWidth, screenHeight, "Jonas Jump");
 
 	// Define the camera to look into our 3d world (position, target, up vector)
-	Camera camera = { 0 };
+	camera = { 0 };
 	camera.position = { 0.0f, 2.0f, 4.0f };    // Camera position
 	camera.target = { 0.0f, 0.0f, 0.0f };      // Camera looking at point
 	camera.up = { 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
@@ -127,10 +129,6 @@ int main()
         // Update
         //----------------------------------------------------------------------------------
 
-
-        lookDirection = Vector3Normalize(camera.target - camera.position);
-        camera.target = camera.position + lookDirection;
-
         if (IsKeyDown(KEY_ONE))
         {
             scene.CreateSystem<PoisonSystem>(600);
@@ -172,7 +170,6 @@ int main()
                 camera.projection = CAMERA_ORTHOGRAPHIC;
                 camera.fovy = 20.0f; // near plane width in CAMERA_ORTHOGRAPHIC
                 
-                
                 /*CameraYaw(&camera, -135 * DEG2RAD, true);
                 CameraPitch(&camera, -45 * DEG2RAD, true, true, false);*/
             }
@@ -187,35 +184,6 @@ int main()
                 camera.fovy = 60.0f;
             }
         }
-
-        // Update camera computes movement internally depending on the camera mode
-        // Some default standard keyboard/mouse inputs are hardcoded to simplify use
-        // For advanced camera controls, it's recommended to compute camera movement manually
-        //UpdateCamera(&camera, cameraMode);                  // Update camera
-
-        
-                // Camera PRO usage example (EXPERIMENTAL)
-                // This new camera function allows custom movement/rotation values to be directly provided
-                // as input parameters, with this approach, rcamera module is internally independent of raylib inputs
-
-
-        UpdateCameraPro(&camera,
-            Vector3{
-                (IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-                (IsKeyDown(KEY_DOWN))*0.1f,
-                (IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-                (IsKeyDown(KEY_LEFT))*0.1f,
-                (IsKeyDown(KEY_ENTER)) * 0.1f-   // Move right-left
-                (IsKeyDown(KEY_RIGHT_SHIFT)) * 0.1f                                 // Move up-down
-            },
-            Vector3{
-                GetMouseDelta().x*0.05f,                            // Rotation: yaw
-                GetMouseDelta().y*0.05f,                            // Rotation: pitch
-                0.0f                                                // Rotation: roll
-            },
-            0);                              // Move to target (zoom)
-
-        //----------------------------------------------------------------------------------
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -282,7 +250,6 @@ int main()
                 DrawCylinder(Vector3(0, i, 0) / 100, 0.1f, 0.1f, 0.1f, 20, BLACK);
             }
         }
-
         scene.DrawScene(renderer);
 
         EndMode3D();

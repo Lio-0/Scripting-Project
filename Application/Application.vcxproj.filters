@@ -22,5 +22,6 @@
     <None Include="scripts\playerController.lua" />
     <None Include="scripts\transform.lua" />
     <None Include="scripts\vector.lua" />
+    <None Include="scripts\fpCamera.lua" />
   </ItemGroup>
 </Project>

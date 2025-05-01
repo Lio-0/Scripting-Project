@@ -3,7 +3,9 @@
 #include "Components.hpp"
 #include "GameConsole.hpp"
 #include "Scene.hpp"
-
+#include "raylib.h"
+#include "raymath.h"
+#include <iostream>
 
 class System
 {
@@ -126,24 +128,48 @@ public:
 	}
 };
 
-//class VelocitySystem : public System
-//{
-//	lua_State* L;
-//
-//public:
-//	VelocitySystem(lua_State* L) : L(L) {}
-//
-//	bool OnUpdate(entt::registry& registry, float delta) final
-//	{
-//		auto view = registry.view<c_Velocity, c_Transform>();
-//
-//		view.each([&](c_Velocity& velocity, c_Transform& transform)
-//			{
-//				transform.position.x += velocity.x * delta;
-//				transform.position.y += velocity.y * delta;
-//				transform.position.z += velocity.z * delta;
-//			});
-//
-//		return false;
-//	}
-//};
+class CameraSystem : public System
+{
+	Camera* camera;
+	int activeCamID;
+public:
+	CameraSystem(Camera* camera) : camera(camera), activeCamID(0) {}
+
+	bool OnUpdate(entt::registry& registry, float delta) final
+	{
+
+		auto view = registry.view<c_Camera, c_Transform>();
+
+		c_Camera c;
+		c_Transform t;
+		view.each([&](c_Camera& cam, c_Transform& transform) {
+			if (cam.ID == activeCamID)
+			{
+				c = cam;
+				t = transform;
+			}
+			});
+
+		camera->position = { t.position.x + c.positionOffset.x, t.position.y + c.positionOffset.y, t.position.z + c.positionOffset.z };
+		camera->target = { c.target.x, c.target.y, c.target.z };
+
+		UpdateCameraPro(camera,
+			Vector3{0, 0, 0},
+			Vector3{
+				GetMouseDelta().x * delta,   // Rotation: yaw
+				GetMouseDelta().y * delta,   // Rotation: pitch
+				0.0f                         // Rotation: roll
+			},
+			0);                              // Move to target (zoom)
+
+		view.each([&](c_Camera& cam, c_Transform& transform)
+			{
+				if (cam.ID == activeCamID)
+				{
+					cam.target = { camera->target.x, camera->target.y, camera->target.z };
+				}
+			});
+
+		return false;
+	}
+};

@@ -20,9 +20,9 @@ private:
 	static int lua_IsKeyReleased(lua_State* L);
 	static int lua_IsKeyUp(lua_State* L);
 
-	static int lua_GetMousePosition();
-	static int lua_GetMouseDelta();
-	static int lua_GetMouseWheelMove();
-	static int lua_IsMouseButtonUp();
-	static int lua_IsMouseButtonDown();
+	static int lua_GetMousePosition(lua_State* L);
+	static int lua_GetMouseDelta(lua_State* L);
+	static int lua_GetMouseWheelMove(lua_State* L);
+	static int lua_IsMouseButtonUp(lua_State* L);
+	static int lua_IsMouseButtonDown(lua_State* L);
 };

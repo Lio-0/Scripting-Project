@@ -6,6 +6,12 @@ struct c_Vector {
     float x, y, z;
 };
 
+struct c_Camera {
+    int ID;
+    c_Vector positionOffset;
+    c_Vector target;
+};
+
 //struct c_Velocity {
 //
 //    float x, y, z;
