@@ -52,29 +52,30 @@ int main()
     Camera camera;
     scene.CreateSystem<BehaviourSystem>(L);
     scene.CreateSystem<CameraSystem>(&camera);
+    scene.CreateSystem<CollisionSystem>(L, 0, 1);
 
     luaL_dofile(L, "scripts/initLevel.lua");
 
 	////Skapa tråd
 	//std::thread consoleThread(ConsoleThreadFunction, L);
 
-    for (size_t i = 0; i < 100; i++)
+    for (size_t i = 0; i < 10; i++)
     {
+        luaL_dofile(L, "scripts/createBlock.lua");
+        GameConsole::DumpError(L);
         //Create a new entity.
-        auto entity = scene.CreateEntity();
+        //auto entity = scene.CreateEntity();
 
-        //Each entity starts out with 100 health points.
-        scene.SetComponent<c_Health>(entity, 100.0f);
+        ////Each entity starts out with 100 health points.
+        //scene.SetComponent<c_Health>(entity, 100.0f);
 
-        c_Vector pos = { float(i) / 10, 0.0f, float(i % 10) / 10.0f};
-        c_Vector rot = { 0.0f, 0.0f, 0.0f };
-        c_Vector scale = { 1.0f, 1.0f, 1.0f };
-        c_Transform transform = { pos, rot, scale };
-        scene.SetComponent<c_Transform>(entity, transform);
-        scene.SetComponent<c_Visual>(entity, "cube", "grey_texture", true);
-
+        //c_Vector pos = { i * 2, 0.0f, i * 2};
+        //c_Vector rot = { 0.0f, 0.0f, 0.0f };
+        //c_Vector scale = { 1.0f, 1.0f, 1.0f };
+        //c_Transform transform = { pos, rot, scale };
+        //scene.SetComponent<c_Transform>(entity, transform);
+        //scene.SetComponent<c_Visual>(entity, "cube", "grey_texture", true);
     }
-
 
 	const int screenWidth = 800 * 2;
 	const int screenHeight = 450 * 2;
@@ -91,25 +92,11 @@ int main()
 
 	int cameraMode = CAMERA_FIRST_PERSON;
 
-	// Generates some random columns
-	float heights[MAX_COLUMNS] = { 0 };
-	Vector3 positions[MAX_COLUMNS] = { 0 };
-	Color colors[MAX_COLUMNS] = { 0 };
-
     Vector3 lookDirection = { 0, 0, 1.0f };
-
-	for (int i = 0; i < MAX_COLUMNS; i++)
-	{
-		heights[i] = 1.0f;
-		positions[i] = { (float)GetRandomValue(-15, -5), (float)(i + 2.0f), (float)GetRandomValue(5, 15)};
-		colors[i] = { (unsigned char)GetRandomValue(20, 255), (unsigned char)GetRandomValue(10, 55), 30, 255 };
-	}
 
 	DisableCursor();                    // Limit cursor to relative movement inside the window
 
-
 	SetTargetFPS(60);
-
 
     //Models
     Renderer renderer;
@@ -195,14 +182,6 @@ int main()
         BeginMode3D(camera);
 
         DrawPlane({ 0.0f, 0.0f, 0.0f }, { 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
-
-        // Draw some cubes around
-        for (int i = 0; i < MAX_COLUMNS; i++)
-        {
-            //DrawCube(positions[i], 2.0f, heights[i], 2.0f, colors[i]);
-            DrawCube(positions[i], 2.0f, heights[i], 2.0f, RED);
-            DrawCubeWires(positions[i], 2.0f, heights[i], 2.0f, BLACK);
-        }
 
 
         /*{

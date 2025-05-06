@@ -207,6 +207,11 @@ int Scene::lua_SetComponent(lua_State* L)
 		c_Vector target = lua_getvector(L, 5);
 		scene->SetComponent<c_Camera>(entity, ID, offset, target);
 	}
+	else if (type == "collision")
+	{
+		int layer = (int)lua_tointeger(L, 3);
+		scene->SetComponent<c_Collision>(entity, layer);
+	}
 
 	return 0;
 }
@@ -253,6 +258,14 @@ int Scene::lua_HasComponent(lua_State* L)
 	else if (type == "collision")
 	{
 		hasComponent = scene->HasComponents<c_Collision>(entity);
+	}
+	else if (type == "vector")
+	{
+		hasComponent = scene->HasComponents<c_Vector>(entity);
+	}
+	else if (type == "camera")
+	{
+		hasComponent = scene->HasComponents<c_Camera>(entity);
 	}
 
 	lua_pushboolean(L, hasComponent);
@@ -317,6 +330,14 @@ int Scene::lua_GetComponent(lua_State* L)
 
 		lua_pushvector(L, camera.target);
 		lua_setfield(L, -2, "target");
+
+		return 1;
+	}
+	else if (type == "collision" && scene->HasComponents<c_Collision>(entity))
+	{
+		c_Collision& collision = scene->GetComponent<c_Collision>(entity);
+
+		lua_pushnumber(L, collision.layer);
 
 		return 1;
 	}

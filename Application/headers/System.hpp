@@ -173,3 +173,88 @@ public:
 		return false;
 	}
 };
+
+class CollisionSystem : public System
+{
+	lua_State* L;
+	int activeLayer;
+	int passiveLayer;
+
+public:
+	CollisionSystem(lua_State* L, int active, int passive) : L(L), activeLayer(active), passiveLayer(passive) {}
+
+	bool OnUpdate(entt::registry& registry, float delta) final
+	{
+
+		auto active = registry.view<c_Collision, c_Transform, c_Vector, c_Behaviour>();
+		auto passive = registry.view<c_Collision, c_Transform>();
+
+		active.each([&](c_Collision& aCollision, c_Transform& aT, c_Vector& aVector, c_Behaviour& script)
+			{
+				if (aCollision.layer == activeLayer)
+				{
+					bool collisionX = false;
+					bool collisionY = false;
+					bool collisionZ = false;
+
+					BoundingBox bx;
+					bx.min = { aT.position.x - aT.scale.x / 2, aT.position.y - aT.scale.y / 2, aT.position.z - aT.scale.z / 2 };
+					bx.max = { aT.position.x + aT.scale.x / 2, aT.position.y + aT.scale.y / 2, aT.position.z + aT.scale.z / 2 };
+					BoundingBox by = bx;
+					BoundingBox bz = bx;
+
+					bx.min.x += aVector.x * delta;
+					bx.max.x += aVector.x * delta;
+
+					by.min.y += aVector.y * delta;
+					by.max.y += aVector.y * delta;
+
+					bz.min.z += aVector.z * delta;
+					bz.max.z += aVector.z * delta;
+
+					BoundingBox b2;
+
+					passive.each([&](c_Collision& pCollision, c_Transform& pT)
+						{
+							if (pCollision.layer == passiveLayer)
+							{
+								b2.min = { pT.position.x - pT.scale.x, pT.position.y - pT.scale.y, pT.position.z - pT.scale.z };
+								b2.max = { pT.position.x + pT.scale.x, pT.position.y + pT.scale.y, pT.position.z + pT.scale.z };
+						
+								if (CheckCollisionBoxes(bx, b2))
+								{
+									collisionX = true;
+								}
+								if (CheckCollisionBoxes(by, b2))
+								{
+									collisionY = true;
+								}
+								if (CheckCollisionBoxes(bz, b2))
+								{
+									collisionZ = true;
+								}
+							}
+						});
+
+
+					lua_rawgeti(L, LUA_REGISTRYINDEX, script.LuaTableRef);
+					lua_getfield(L, -1, "OnCollision");
+					lua_pushvalue(L, -2);
+					lua_pushnumber(L, delta);
+					lua_pushboolean(L, collisionX);
+					lua_pushboolean(L, collisionY);
+					lua_pushboolean(L, collisionZ);
+
+
+					if (lua_pcall(L, 5, 0, 0) != LUA_OK)
+					{
+						GameConsole::DumpError(L);
+					}
+
+					lua_pop(L, 1);
+				}
+			});
+
+		return false;
+	}
+};

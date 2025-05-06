@@ -22,9 +22,7 @@ struct c_Transform {
 };
 
 struct c_Collision {
-    float width;
-    float height;
-    bool isColliding;
+    int layer;
 };
 
 struct c_Health

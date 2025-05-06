@@ -2,9 +2,11 @@ local playerController = {}
 
 local vector = require("vector")
 local grounded
+local colX, colY, colZ = false, false, false
+local lastPos
 
 local function bton(value)
- return value == true and 1 or value == false and 0
+	return value == true and 1 or value == false and 0
 end
 
 function playerController:OnCreate()
@@ -28,16 +30,18 @@ function playerController:OnCreate()
 		}
 	}
 
-
 	local vector = {
 		x = 0,
 		y = 0,
 		z = 0
 	}
 
+	lastPos = transform.position
+
 	scene.SetComponent(self.ID, "vector", vector)
 
 	scene.SetComponent(entity, "transform", transform)
+	scene.SetComponent(eneity, "collision", 0)
 
 	--Transform is reused for vectors required in the camera component, position is offset, rotation is target
 	transform.position.y = 0.9 --Camera height
@@ -50,6 +54,10 @@ function playerController:OnUpdate(delta)
 	local transform = scene.GetComponent(self.ID, "transform")
 	local velocity = scene.GetComponent(self.ID, "vector")
 	local camera = scene.GetComponent(self.ID, "camera")
+
+	lastPos.x = transform.position.x
+	lastPos.y = transform.position.y
+	lastPos.z = transform.position.z
 
 	-- Get the view direction of the camera
 	local viewDirection = vector(camera.target.x - transform.position.x - camera.offset.x,
@@ -118,6 +126,16 @@ function playerController:OnUpdate(delta)
 	transform.position.y = transform.position.y + velocity.y * delta
 	transform.position.z = transform.position.z + velocity.z * delta
 
+	if (colX) then
+		transform.position.x = lastPos.x
+	end
+	if (colY) then
+		transform.position.y = lastPos.y
+	end
+	if (colZ) then
+		transform.position.z = lastPos.z
+	end
+
 	--Current collision calculation
 	if transform.position.y < 0.5 then
 		transform.position.y = 0.5
@@ -135,7 +153,30 @@ function playerController:OnUpdate(delta)
 	scene.SetComponent(self.ID, "transform", transform)
 	scene.SetComponent(self.ID, "vector", velocity)
 	scene.SetComponent(self.ID, "camera", camera.ID, camera.offset, camera.target)
+end
 
+
+function playerController:OnCollision(delta, collisionX, collisionY, collisionZ)
+	local t = scene.GetComponent(self.ID, "transform")
+	local v = scene.GetComponent(self.ID, "vector")
+
+	colX = collisionX
+	colY = collisionY
+	colZ = collisionZ
+
+	if (collisionX) then
+		v.x = v.x * 0.3
+	end
+	if (collisionY) then
+		v.y = 0
+		grounded = true
+	end
+	if (collisionZ) then
+		v.z = v.z * 0.3
+	end
+
+	scene.SetComponent(self.ID, "transform", t)
+	scene.SetComponent(self.ID, "vector", v)
 end
 
 return playerController
