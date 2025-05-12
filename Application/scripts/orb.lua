@@ -1,10 +1,13 @@
+local orb = {}
+
+local vector = require("vector")
 
 function orb:OnCreate()
 	local transform = {
 		position = {
-			x = 0,
+			x = math.random(0, 10),
 			y = 1,
-			z = 0
+			z = math.random(0, 10)
 		},
 
 		rotation = {
@@ -19,17 +22,24 @@ function orb:OnCreate()
 			z = 0.25
 		}
 	}
-
-	lastPos = transform.position
-
-	scene.SetComponent(entity, "transform", transform)
-	scene.SetComponent(entity, "collision", 0)
-
+	scene.SetComponent(self.ID, "visual", "orb", "orb_texture", true) 
+	scene.SetComponent(self.ID, "collision", 2)
+	scene.SetComponent(self.ID, "transform", transform)
+	scene.SetComponent(self.ID, "vector", transform.rotation)
 end
 
 function orb:OnUpdate(delta)
-	scene.GetComponent()
+	local transform = scene.GetComponent(self.ID, "transform")
+
+	transform.rotation.x = transform.rotation.x + delta * 100
+
+	scene.SetComponent(self.ID, "transform", transform)
 end
 
 function orb:OnCollision(delta, collisionX, collisionY, collisionZ)
+	if (collisionX or collisionY or collisionZ) then
+		scene.RemoveEntity(self.ID)
+	end
 end
+
+return orb

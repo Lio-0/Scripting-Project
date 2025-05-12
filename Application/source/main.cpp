@@ -53,6 +53,7 @@ int main()
     scene.CreateSystem<BehaviourSystem>(L);
     scene.CreateSystem<CameraSystem>(&camera);
     scene.CreateSystem<CollisionSystem>(L, 0, 1);
+    scene.CreateSystem<CollisionSystem>(L, 2, 0);
 
     luaL_dofile(L, "scripts/initLevel.lua");
 
@@ -187,52 +188,6 @@ int main()
 
         DrawPlane({ 0.0f, 0.0f, 0.0f }, { 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
 
-
-        /*{
-            auto view = scene.GetRegistry()->view<c_Transform, c_Poison>();
-
-            view.each([](const c_Transform& transform, const c_Poison& poison) {
-                DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f * transform.scale.x, RED);
-                DrawSphereWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f * transform.scale.x, 5, 5, BLACK);
-                });
-        }
-
-        {
-
-            auto view = scene.GetRegistry()->view<c_Transform>(entt::exclude<c_Poison, c_Behaviour>);
-            
-            view.each([](const c_Transform& transform) {
-                DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f * transform.scale.x, BLUE);
-                DrawSphereWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f * transform.scale.x, 5, 5, BLACK);
-                });
-        }
-
-        {
-            auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform>(entt::exclude<c_Vector>);
-
-            view.each([](const c_Behaviour& behaviour, const c_Transform& transform) {
-                DrawSphere(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, BEIGE);
-                DrawSphereWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.1f, 12, 12, BLACK);
-                });
-        }*/
-
-        {
-            auto view = scene.GetRegistry()->view<c_Behaviour, c_Transform, c_Vector>();
-
-            view.each([](const c_Behaviour& behaviour, const c_Transform& transform, const c_Vector& vector) {
-                DrawCylinder(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.25f, 0.25f, 1, 32, PINK);
-                DrawCylinderWires(Vector3{ transform.position.x, transform.position.y, transform.position.z }, 0.25f, 0.25f, 1, 8, BLACK);
-                });
-        }
-
-        {
-            auto view = scene.GetRegistry()->view<entt::entity>();
-
-            for (size_t i = 0; i < view.size(); i++)
-            {
-                DrawCylinder(Vector3(0, i, 0) / 100, 0.1f, 0.1f, 0.1f, 20, BLACK);
-            }
-        }
         scene.DrawScene(renderer);
 
         EndMode3D();

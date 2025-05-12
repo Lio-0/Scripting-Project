@@ -40,13 +40,13 @@ function playerController:OnCreate()
 
 	scene.SetComponent(self.ID, "vector", vector)
 
-	scene.SetComponent(entity, "transform", transform)
-	scene.SetComponent(entity, "collision", 0)
+	scene.SetComponent(self.ID, "transform", transform)
+	scene.SetComponent(self.ID, "collision", 0)
 
 	--Transform is reused for vectors required in the camera component, position is offset, rotation is target
 	transform.position.y = 0.9 --Camera height
 	transform.rotation.z = 1 --Camera look direction
-	scene.SetComponent(entity, "camera", 0, transform.position, transform.rotation)
+	scene.SetComponent(self.ID, "camera", 0, transform.position, transform.rotation)
 end
 
 function playerController:OnUpdate(delta)
@@ -103,7 +103,6 @@ function playerController:OnUpdate(delta)
 	end
 
 	-- Space = 32
-	print(grounded)
 	if (input.IsKeyDown(32) and grounded) then
 
 		--Initial launch speed for better gameplay feel
