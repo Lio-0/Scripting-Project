@@ -156,8 +156,8 @@ public:
 		UpdateCameraPro(camera,
 			Vector3{0, 0, 0},
 			Vector3{
-				GetMouseDelta().x * delta,   // Rotation: yaw
-				GetMouseDelta().y * delta,   // Rotation: pitch
+				GetMouseDelta().x * delta * 2,   // Rotation: yaw
+				GetMouseDelta().y * delta * 2,   // Rotation: pitch
 				0.0f                         // Rotation: roll
 			},
 			0);                              // Move to target (zoom)

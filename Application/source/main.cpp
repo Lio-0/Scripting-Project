@@ -104,12 +104,16 @@ int main()
     renderer.LoadModel("cube", cubeModel);
     Model ratModel = LoadModel("assets/rat.obj");
     renderer.LoadModel("rat", ratModel);
+    Model orbModel = LoadModel("assets/orb.obj");
+    renderer.LoadModel("orb", orbModel);
 
     //Textures
     Texture2D greyTexture = LoadTexture("assets/grey_texture.png");
     renderer.LoadTexture("grey_texture", greyTexture);
     Texture2D baseTexture = LoadTexture("assets/base_texture.png");
     renderer.LoadTexture("base_texture", baseTexture);
+    Texture2D orbTexture = LoadTexture("assets/orb_texture.png");
+    renderer.LoadTexture("orb_texture", orbTexture);
 
 	while (!WindowShouldClose())
 	{
@@ -135,7 +139,7 @@ int main()
 
         if (IsKeyPressed(KEY_FIVE))
         {
-            if (luaL_dofile(L, "scripts/createFilur.lua") != LUA_OK)
+            if (luaL_dofile(L, "scripts/createOrb.lua") != LUA_OK)
             {
                 GameConsole::DumpError(L);
             }

@@ -53,3 +53,13 @@ struct c_Visual
     std::string textureName;
     bool isRendered;
 };
+
+struct c_Collectible
+{
+    int ID;
+};
+
+struct c_CollectibleObserver
+{
+    int observingID;
+};

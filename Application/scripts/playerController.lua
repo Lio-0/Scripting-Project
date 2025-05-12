@@ -24,9 +24,9 @@ function playerController:OnCreate()
 		},
 
 		scale = {
-			x = 0,
-			y = 0,
-			z = 0
+			x = 0.3,
+			y = 1,
+			z = 0.3
 		}
 	}
 
@@ -41,7 +41,7 @@ function playerController:OnCreate()
 	scene.SetComponent(self.ID, "vector", vector)
 
 	scene.SetComponent(entity, "transform", transform)
-	scene.SetComponent(eneity, "collision", 0)
+	scene.SetComponent(entity, "collision", 0)
 
 	--Transform is reused for vectors required in the camera component, position is offset, rotation is target
 	transform.position.y = 0.9 --Camera height
@@ -96,7 +96,14 @@ function playerController:OnUpdate(delta)
 		velocity.z = velocity.z + delta * viewDirNoY.x * (-math.sin(math.rad(90))) * (30 + 50 * bton(input.IsKeyDown(340)))
 	end
 
+	if input.IsKeyDown(341) then
+		camera.offset.y = 0.5
+	else
+		camera.offset.y = 1
+	end
+
 	-- Space = 32
+	print(grounded)
 	if (input.IsKeyDown(32) and grounded) then
 
 		--Initial launch speed for better gameplay feel
@@ -128,12 +135,19 @@ function playerController:OnUpdate(delta)
 
 	if (colX) then
 		transform.position.x = lastPos.x
+		colX = false
 	end
 	if (colY) then
 		transform.position.y = lastPos.y
+		if velocity.y <= 0 then
+			grounded = true
+			velocity.y = 0
+		end
+		colY = false
 	end
 	if (colZ) then
 		transform.position.z = lastPos.z
+		colZ = false
 	end
 
 	--Current collision calculation
@@ -164,15 +178,10 @@ function playerController:OnCollision(delta, collisionX, collisionY, collisionZ)
 	colY = collisionY
 	colZ = collisionZ
 
-	if (collisionX) then
-		v.x = v.x * 0.3
-	end
 	if (collisionY) then
-		v.y = 0
-		grounded = true
-	end
-	if (collisionZ) then
-		v.z = v.z * 0.3
+		if v.y > 0 then
+			v.y = -v.y
+		end
 	end
 
 	scene.SetComponent(self.ID, "transform", t)
