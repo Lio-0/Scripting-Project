@@ -64,18 +64,6 @@ int main()
     {
         luaL_dofile(L, "scripts/createBlock.lua");
         GameConsole::DumpError(L);
-        //Create a new entity.
-        //auto entity = scene.CreateEntity();
-
-        ////Each entity starts out with 100 health points.
-        //scene.SetComponent<c_Health>(entity, 100.0f);
-
-        //c_Vector pos = { i * 2, 0.0f, i * 2};
-        //c_Vector rot = { 0.0f, 0.0f, 0.0f };
-        //c_Vector scale = { 1.0f, 1.0f, 1.0f };
-        //c_Transform transform = { pos, rot, scale };
-        //scene.SetComponent<c_Transform>(entity, transform);
-        //scene.SetComponent<c_Visual>(entity, "cube", "grey_texture", true);
     }
 
 	const int screenWidth = 800 * 2;
@@ -120,23 +108,6 @@ int main()
 	{
         // Update
         //----------------------------------------------------------------------------------
-
-        if (IsKeyDown(KEY_ONE))
-        {
-            scene.CreateSystem<PoisonSystem>(600);
-        }
-        if (IsKeyDown(KEY_TWO))
-        {
-            scene.CreateSystem<CurePoisonSystem>(600);
-        }
-        if (IsKeyDown(KEY_THREE))
-        {
-            scene.CreateSystem<DeathSystem>(600);
-        }
-        if (IsKeyDown(KEY_FOUR))
-        {
-            scene.CreateSystem<SpawnPoisonSystem>(600);
-        }
 
         if (IsKeyPressed(KEY_FIVE))
         {
@@ -192,16 +163,22 @@ int main()
 
         EndMode3D();
 
+        
+
         // Draw info boxes
         DrawRectangle(5, 5, 310, 115, Fade(SKYBLUE, 0.5f));
         DrawRectangleLines(5, 5, 310, 115, BLUE);
 
         DrawText("Camera controls: Up, Down, Left, Right, Enter, Right-Shift", 15, 15, 10, BLACK);
         DrawText("Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
-        DrawText("1. Poison System", 15, 45, 10, BLACK);
-        DrawText("2. Cure Poison System", 15, 60, 10, BLACK);
-        DrawText("3. Death System", 15, 75, 10, BLACK);
-        DrawText("4. Spawn Poison System", 15, 90, 10, BLACK);
+        {
+            int collectibleCount = scene.GetRegistry()->view<c_Collectible>().size();
+            std::string text = std::string("Collectibles: ") + std::to_string(collectibleCount);
+            DrawText(text.c_str(), 15, 85, 10, BLACK);
+
+            if (collectibleCount <= 0)
+                DrawText("YOU WIN!", screenWidth / 2 - 200, screenHeight / 2 - 50, 100, GREEN);
+        }
         DrawText("5. Spawn Entities", 15, 105, 10, BLACK);
 
         DrawRectangle(600, 5, 195, 100, Fade(SKYBLUE, 0.5f));
@@ -213,7 +190,6 @@ int main()
         DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", camera.position.x, camera.position.y, camera.position.z), 610, 60, 10, BLACK);
         DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", camera.target.x, camera.target.y, camera.target.z), 610, 75, 10, BLACK);
         DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", camera.up.x, camera.up.y, camera.up.z), 610, 90, 10, BLACK);
-
         EndDrawing();
 	}
 

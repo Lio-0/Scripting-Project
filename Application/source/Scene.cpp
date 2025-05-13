@@ -151,12 +151,7 @@ int Scene::lua_SetComponent(lua_State* L)
 	int entity = (int)lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
 
-	if (type == "health")
-	{
-		float value = lua_tonumber(L, 3);
-		scene->SetComponent<c_Health>(entity, value);
-	}
-	else if (type == "vector")
+	if (type == "vector")
 	{
 		if (!lua_istable(L, 3)) {
 			return luaL_error(L, "Expected table for vector");
@@ -164,11 +159,6 @@ int Scene::lua_SetComponent(lua_State* L)
 
 		c_Vector vector = lua_getvector(L, 3);
 		scene->SetComponent<c_Vector>(entity, vector);
-	}
-	else if (type == "poison")
-	{
-		float tickDamage = lua_tonumber(L, 3);
-		scene->SetComponent<c_Poison>(entity, tickDamage);
 	}
 	else if (type == "behaviour")
 	{
@@ -211,6 +201,11 @@ int Scene::lua_SetComponent(lua_State* L)
 	{
 		int layer = (int)lua_tointeger(L, 3);
 		scene->SetComponent<c_Collision>(entity, layer);
+	}
+	else if (type == "collectible")
+	{
+		int ID = (int)lua_tointeger(L, 3);
+		scene->SetComponent<c_Collectible>(entity, ID);
 	}
 
 	return 0;
@@ -267,6 +262,10 @@ int Scene::lua_HasComponent(lua_State* L)
 	{
 		hasComponent = scene->HasComponents<c_Camera>(entity);
 	}
+	else if (type == "collectible")
+	{
+		hasComponent = scene->HasComponents<c_Collectible>(entity);
+	}
 
 	lua_pushboolean(L, hasComponent);
 
@@ -302,18 +301,6 @@ int Scene::lua_GetComponent(lua_State* L)
 	{
 		c_Transform& transform = scene->GetComponent<c_Transform>(entity);
 		lua_pushtransform(L, transform);
-		return 1;
-	}
-	else if (type == "health" && scene->HasComponents<c_Health>(entity))
-	{
-		c_Health& health = scene->GetComponent<c_Health>(entity);
-		lua_pushnumber(L, health.Value);
-		return 1;
-	}
-	else if (type == "poison" && scene->HasComponents<c_Poison>(entity))
-	{
-		c_Poison& poison = scene->GetComponent<c_Poison>(entity);
-		lua_pushnumber(L, poison.TickDamage);
 		return 1;
 	}
 	else if (type == "camera" && scene->HasComponents<c_Camera>(entity))

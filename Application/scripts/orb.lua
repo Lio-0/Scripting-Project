@@ -17,15 +17,16 @@ function orb:OnCreate()
 		},
 
 		scale = {
-			x = 0.25,
-			y = 0.25,
-			z = 0.25
+			x = 0.3,
+			y = 0.3,
+			z = 0.3
 		}
 	}
 	scene.SetComponent(self.ID, "visual", "orb", "orb_texture", true) 
 	scene.SetComponent(self.ID, "collision", 2)
 	scene.SetComponent(self.ID, "transform", transform)
 	scene.SetComponent(self.ID, "vector", transform.rotation)
+	scene.SetComponent(self.ID, "collectible", 0)
 end
 
 function orb:OnUpdate(delta)

@@ -12,27 +12,12 @@ struct c_Camera {
     c_Vector target;
 };
 
-//struct c_Velocity {
-//
-//    float x, y, z;
-//};
-
 struct c_Transform {
     c_Vector position, rotation, scale;
 };
 
 struct c_Collision {
     int layer;
-};
-
-struct c_Health
-{
-    float Value;
-};
-
-struct c_Poison
-{
-    float TickDamage;
 };
 
 struct c_Behaviour
