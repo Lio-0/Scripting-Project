@@ -132,8 +132,8 @@ public:
 						{
 							if (pCollision.layer == passiveLayer)
 							{
-								b2.min = { pT.position.x - pT.scale.x, pT.position.y - pT.scale.y, pT.position.z - pT.scale.z };
-								b2.max = { pT.position.x + pT.scale.x, pT.position.y + pT.scale.y, pT.position.z + pT.scale.z };
+								b2.min = { pT.position.x - pT.scale.x / 2, pT.position.y - pT.scale.y / 2, pT.position.z - pT.scale.z / 2 };
+								b2.max = { pT.position.x + pT.scale.x / 2, pT.position.y + pT.scale.y / 2, pT.position.z + pT.scale.z / 2 };
 						
 								if (CheckCollisionBoxes(bx, b2))
 								{

@@ -38,13 +38,13 @@ int main()
 {
     srand((unsigned int)time(NULL));
 
-	std::cout << "Hello Bergman!" << std::endl;
+    std::cout << "Hello Bergman!" << std::endl;
     // LUA SKIT
-	//Rekommenderat att ha ett men går att ha flera om det behövs
-	lua_State* L = luaL_newstate();
+    //Rekommenderat att ha ett men går att ha flera om det behövs
+    lua_State* L = luaL_newstate();
 
-	////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
-	luaL_openlibs(L);
+    ////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
+    luaL_openlibs(L);
 
     LuaInput input(L);
     Scene scene(L);
@@ -57,12 +57,17 @@ int main()
 
     luaL_dofile(L, "scripts/initLevel.lua");
 
-	////Skapa tråd
-	//std::thread consoleThread(ConsoleThreadFunction, L);
+    ////Skapa tråd
+    //std::thread consoleThread(ConsoleThreadFunction, L);
 
     for (size_t i = 0; i < 10; i++)
     {
         luaL_dofile(L, "scripts/createBlock.lua");
+        GameConsole::DumpError(L);
+    }
+    for (size_t i = 0; i < 10; i++)
+    {
+        luaL_dofile(L, "scripts/createPlatform.lua");
         GameConsole::DumpError(L);
     }
 
@@ -157,7 +162,8 @@ int main()
 
         BeginMode3D(camera);
 
-        DrawPlane({ 0.0f, 0.0f, 0.0f }, { 32.0f, 32.0f }, LIGHTGRAY); // Draw ground
+        DrawPlane({ 0.0f, 0.0f, 0.0f }, { 32.0f, 32.0f }, GRAY); // Draw ground
+        
 
         scene.DrawScene(renderer);
 
