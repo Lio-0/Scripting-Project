@@ -27,6 +27,9 @@ function orb:OnCreate()
 	scene.SetComponent(self.ID, "transform", transform)
 	scene.SetComponent(self.ID, "vector", transform.rotation)
 	scene.SetComponent(self.ID, "collectible", 0)
+	scene.SetComponent(self.ID, "clickable")
+
+
 end
 
 function orb:OnUpdate(delta)

@@ -48,3 +48,7 @@ struct c_CollectibleObserver
 {
     int observingID;
 };
+
+struct c_Clickable {};
+
+struct c_Selected {};

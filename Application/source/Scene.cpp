@@ -207,6 +207,14 @@ int Scene::lua_SetComponent(lua_State* L)
 		int ID = (int)lua_tointeger(L, 3);
 		scene->SetComponent<c_Collectible>(entity, ID);
 	}
+	else if (type == "clickable")
+	{
+		scene->SetComponent<c_Clickable>(entity);
+	}
+	else if (type == "selected")
+	{
+		scene->SetComponent<c_Selected>(entity);
+	}
 
 	return 0;
 }

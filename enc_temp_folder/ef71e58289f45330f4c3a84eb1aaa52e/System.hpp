@@ -208,7 +208,7 @@ public:
 				};
 
 				RayCollision collisionInfo = GetRayCollisionBox(mouseRay, box);
-			if (collisionInfo.hit) {
+				if (collisionInfo.hit) {
 					clickedOnEntity = true;
 
 					if (!IsKeyDown(KEY_LEFT_SHIFT)) {

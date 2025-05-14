@@ -54,6 +54,8 @@ int main()
     scene.CreateSystem<CameraSystem>(&camera);
     scene.CreateSystem<CollisionSystem>(L, 0, 1);
     scene.CreateSystem<CollisionSystem>(L, 2, 0);
+    scene.CreateSystem<SelectionSystem>(L, &camera);
+    scene.CreateSystem<DraggingSystem>(L, &camera);
 
     luaL_dofile(L, "scripts/initLevel.lua");
 

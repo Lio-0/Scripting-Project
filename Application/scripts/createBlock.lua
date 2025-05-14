@@ -23,3 +23,4 @@ local transform = {
 scene.SetComponent(entity, "visual", "cube", "grey_texture", true) 
 scene.SetComponent(entity, "collision", 1)
 scene.SetComponent(entity, "transform", transform)
+scene.SetComponent(entity, "clickable")
