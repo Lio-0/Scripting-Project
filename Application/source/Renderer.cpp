@@ -68,7 +68,7 @@ void Renderer::Draw(const std::vector<RenderData>& objects)
             }
                 
             
-            DrawModelEx(model, obj.position, {0, 1.0f, 0}, obj.rotation.x, obj.scale, WHITE);
+            DrawModelEx(model, obj.position, { 0, 1.0f, 0 }, obj.rotation.x, obj.scale, {obj.r, obj.g, obj.b, obj.a});
         }
     }
 }

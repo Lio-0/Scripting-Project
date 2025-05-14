@@ -52,3 +52,8 @@ struct c_CollectibleObserver
 struct c_Clickable {};
 
 struct c_Selected {};
+
+struct c_Color
+{
+    unsigned char r, g, b, a;
+};

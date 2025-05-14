@@ -121,8 +121,7 @@ public:
 					bx.min.x += aVector.x * delta;
 					bx.max.x += aVector.x * delta;
 
-					by.min.y += aVector.y * delta;
-					by.max.y += aVector.y * delta;
+					by.min.y += aVector.y * delta; 
 
 					bz.min.z += aVector.z * delta;
 					bz.max.z += aVector.z * delta;
@@ -342,6 +341,26 @@ public:
 					otherTransform.position.y + otherTransform.scale.y / 2,
 					otherTransform.position.z + otherTransform.scale.z / 2
 				};
+
+				if (CheckCollisionBoxes(draggedBox, otherBox)) {
+					// Handle collision - could snap back or prevent movement
+					// For now, just change color to indicate collision
+					if (registry.all_of<c_Color>(m_draggedEntity)) {
+						auto& color = registry.get<c_Color>(m_draggedEntity);
+						color.a = 230;
+						color.b = 41;
+						color.g = 55;
+					}
+					break;
+				}
+				else {
+					if (registry.all_of<c_Color>(m_draggedEntity)) {
+						auto& color = registry.get<c_Color>(m_draggedEntity);
+						color.a = 255;
+						color.b = 255;
+						color.g = 255;
+					}
+				}
 			}
 		}
 

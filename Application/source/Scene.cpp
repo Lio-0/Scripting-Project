@@ -136,6 +136,29 @@ c_Transform lua_totransform(lua_State* L, int index)
 	return t;
 }
 
+c_Color lua_tocolor(lua_State* L, int index)
+{
+	c_Color color;
+
+	lua_getfield(L, index, "r");
+	color.r = (unsigned char)luaL_checkinteger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "g");
+	color.g = (unsigned char)luaL_checkinteger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "b");
+	color.b = (unsigned char)luaL_checkinteger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "a");
+	color.a = (unsigned char)luaL_optinteger(L, -1, 255); // default to 255
+	lua_pop(L, 1);
+
+	return color;
+}
+
 int Scene::lua_CreateEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
@@ -214,6 +237,15 @@ int Scene::lua_SetComponent(lua_State* L)
 	else if (type == "selected")
 	{
 		scene->SetComponent<c_Selected>(entity);
+	}
+	else if (type == "color")
+	{
+		if (!lua_istable(L, 3)) {
+			return luaL_error(L, "Expected table for color");
+		}
+
+		c_Color color = lua_tocolor(L, 3);
+		scene->SetComponent<c_Color>(entity, color);
 	}
 
 	return 0;
@@ -336,7 +368,26 @@ int Scene::lua_GetComponent(lua_State* L)
 
 		return 1;
 	}
+	else if (type == "color" && scene->HasComponents<c_Color>(entity))
+	{
+		c_Color& color = scene->GetComponent<c_Color>(entity);
 
+		lua_newtable(L);
+
+		lua_pushinteger(L, color.r);
+		lua_setfield(L, -2, "r");
+
+		lua_pushinteger(L, color.g);
+		lua_setfield(L, -2, "g");
+
+		lua_pushinteger(L, color.b);
+		lua_setfield(L, -2, "b");
+
+		lua_pushinteger(L, color.a);
+		lua_setfield(L, -2, "a");
+
+		return 1;
+	}
 	lua_pushnil(L);
 	return 1;
 }
@@ -386,9 +437,9 @@ void Scene::DrawScene(Renderer& renderer)
 {
 	std::vector<RenderData> renderObjects;
 
-	auto view = m_registry.view<c_Transform, c_Visual>();
+	auto view = m_registry.view<c_Transform, c_Visual, c_Color>();
 
-	view.each([&](const c_Transform& transform, const c_Visual& visual)
+	view.each([&](const c_Transform& transform, const c_Visual& visual, const c_Color& color)
 	{
 		if (!visual.isRendered)
 			return;
@@ -399,6 +450,10 @@ void Scene::DrawScene(Renderer& renderer)
 		data.scale = { transform.scale.x, transform.scale.y, transform.scale.z };
 		data.modelName = visual.modelName;
 		data.textureName = visual.textureName;
+		data.r = color.r;
+		data.g = color.g;
+		data.b = color.b;
+		data.a = color.a;
 
 		renderObjects.push_back(data);
 	});

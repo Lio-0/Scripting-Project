@@ -28,6 +28,7 @@ function orb:OnCreate()
 	scene.SetComponent(self.ID, "vector", transform.rotation)
 	scene.SetComponent(self.ID, "collectible", 0)
 	scene.SetComponent(self.ID, "clickable")
+	scene.SetComponent(self.ID, "color", {r = 255, g = 255, b = 255})
 
 
 end

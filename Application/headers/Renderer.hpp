@@ -10,6 +10,7 @@ struct RenderData
     Vector3 scale;
     std::string modelName;
     std::string textureName;
+    unsigned char r, g, b, a;
 };
 
 class Renderer
