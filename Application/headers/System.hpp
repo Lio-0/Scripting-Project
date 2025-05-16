@@ -213,18 +213,37 @@ public:
 					if (!IsKeyDown(KEY_LEFT_SHIFT)) {
 						auto selectedView = registry.view<c_Selected>();
 						registry.remove<c_Selected>(selectedView.begin(), selectedView.end());
+						if (registry.all_of<c_Color>(entity)) {
+							auto& color = registry.get<c_Color>(entity);
+							color.r = 255;
+							color.g = 255;
+							color.b = 255;
+						}
 					}
-
 					if (registry.all_of<c_Selected>(entity)) {
 						registry.remove<c_Selected>(entity);
+						if (registry.all_of<c_Color>(entity)) {
+							auto& color = registry.get<c_Color>(entity);
+							color.r = 255;
+							color.g = 255;
+							color.b = 255;
+						}
 					}
 					else {
 						registry.emplace<c_Selected>(entity);
+						if (registry.all_of<c_Color>(entity)) {
+							auto& color = registry.get<c_Color>(entity);
+							color.r = 0;
+							color.g = 255;
+							color.b = 0;
+						}
 					}
 
 					break;
 				}
 			}
+
+
 
 			if (!clickedOnEntity && !IsKeyDown(KEY_LEFT_SHIFT)) {
 				auto selectedView = registry.view<c_Selected>();
@@ -238,129 +257,80 @@ public:
 
 class DraggingSystem : public System
 {
-	lua_State* L;
-	Vector3 m_dragOffset;
-	bool m_isDragging = false;
 	Camera* m_camera;
-	entt::entity m_draggedEntity;
+	entt::entity m_draggedEntity = entt::null;
 
 public:
-	DraggingSystem(lua_State* lua, Camera* camera) : L(lua), m_camera(camera) {}
+	DraggingSystem(lua_State*, Camera* camera) : m_camera(camera) {}
 
 	bool OnUpdate(entt::registry& registry, float delta) override
 	{
 		auto view = registry.view<c_Selected, c_Transform, c_Collision>();
 
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !registry.view<c_Selected>().empty()) {
+		// Start dragging if mouse pressed on a selected entity
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			Vector2 mousePos = GetMousePosition();
-			Ray mouseRay = GetMouseRay(mousePos, *m_camera);
+			Ray ray = GetMouseRay(mousePos, *m_camera);
 
 			float closestDistance = FLT_MAX;
-			entt::entity closestEntity = entt::null;
+			entt::entity hitEntity = entt::null;
 
 			for (auto [entity, transform, collision] : view.each()) {
-				BoundingBox box;
-				box.min = {
-					transform.position.x - transform.scale.x / 2,
-					transform.position.y - transform.scale.y / 2,
-					transform.position.z - transform.scale.z / 2
-				};
-				box.max = {
-					transform.position.x + transform.scale.x / 2,
-					transform.position.y + transform.scale.y / 2,
-					transform.position.z + transform.scale.z / 2
-				};
+				BoundingBox box = {
+					box.min.x = transform.position.x - transform.scale.x * 0.5f,
+					box.min.y = transform.position.y - transform.scale.y * 0.5f,
+					box.min.z = transform.position.z - transform.scale.z * 0.5f,
 
-				RayCollision collisionInfo = GetRayCollisionBox(mouseRay, box);
-				if (collisionInfo.hit && collisionInfo.distance < closestDistance) {
-					closestDistance = collisionInfo.distance;
-					closestEntity = entity;
+					box.max.x = transform.position.x + transform.scale.x * 0.5f,
+					box.max.y = transform.position.y + transform.scale.y * 0.5f,
+					box.max.z = transform.position.z + transform.scale.z * 0.5f
+				};
+				RayCollision hit = GetRayCollisionBox(ray, box);
+				if (hit.hit && hit.distance < closestDistance) {
+					closestDistance = hit.distance;
+					hitEntity = entity;
 				}
 			}
 
-			if (closestEntity != entt::null) {
-				m_draggedEntity = closestEntity;
-				auto& transform = registry.get<c_Transform>(closestEntity);
-
-				Vector3 rayEnd = Vector3Add(mouseRay.position,
-					Vector3Scale(mouseRay.direction, closestDistance));
-				Vector3 t_position = Vector3(transform.position.x, transform.position.y, transform.position.z);
-				m_dragOffset = Vector3Subtract(t_position, rayEnd);
-				m_isDragging = true;
+			if (hitEntity != entt::null) {
+				m_draggedEntity = hitEntity;
 			}
 		}
 
+		// Stop dragging on release
 		if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-			m_isDragging = false;
+			if (m_draggedEntity != entt::null && registry.all_of<c_Color>(m_draggedEntity)) {
+				auto& color = registry.get<c_Color>(m_draggedEntity);
+				color.r = 255;
+				color.g = 255;
+				color.b = 255;
+			}
 			m_draggedEntity = entt::null;
 		}
 
-		if (m_isDragging && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && m_draggedEntity != entt::null) {
-			Vector2 mousePos = GetMousePosition();
-			Ray mouseRay = GetMouseRay(mousePos, *m_camera);
-
+		// Drag if holding mouse button and an entity is active
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && m_draggedEntity != entt::null) {
 			auto& transform = registry.get<c_Transform>(m_draggedEntity);
-			auto& collision = registry.get<c_Collision>(m_draggedEntity);
 
-			// Calculate new position based on raycast
-			Vector3 rayEnd = Vector3Add(mouseRay.position,
-				Vector3Scale(mouseRay.direction,
-					(transform.position.z - m_camera->position.z) / mouseRay.direction.z));
+			Vector2 mousePos = GetMousePosition();
+			Ray ray = GetMouseRay(mousePos, *m_camera);
 
-			// Apply offset
+			// Intersect with Z-plane of entity
+			float planeZ = transform.position.z;
+			float distance = (planeZ - ray.position.z) / ray.direction.z;
+			Vector3 target = Vector3Add(ray.position, Vector3Scale(ray.direction, distance));
 
-			transform.position.x = Vector3Add(rayEnd, m_dragOffset).x;
-			transform.position.y = Vector3Add(rayEnd, m_dragOffset).y;
-			transform.position.z = Vector3Add(rayEnd, m_dragOffset).z;
+			transform.position.x = target.x;
+			transform.position.y = target.y;
+			// Optionally lock z to original plane
+			transform.position.z = planeZ;
 
-			// Check for collisions with other objects
-			BoundingBox draggedBox;
-			draggedBox.min = {
-				transform.position.x - transform.scale.x / 2,
-				transform.position.y - transform.scale.y / 2,
-				transform.position.z - transform.scale.z / 2
-			};
-			draggedBox.max = {
-				transform.position.x + transform.scale.x / 2,
-				transform.position.y + transform.scale.y / 2,
-				transform.position.z + transform.scale.z / 2
-			};
-
-			auto collisionView = registry.view<const c_Transform, const c_Collision>();
-			for (auto [entity, otherTransform, otherCollision] : collisionView.each()) {
-				if (entity == m_draggedEntity) continue;
-
-				BoundingBox otherBox;
-				otherBox.min = {
-					otherTransform.position.x - otherTransform.scale.x / 2,
-					otherTransform.position.y - otherTransform.scale.y / 2,
-					otherTransform.position.z - otherTransform.scale.z / 2
-				};
-				otherBox.max = {
-					otherTransform.position.x + otherTransform.scale.x / 2,
-					otherTransform.position.y + otherTransform.scale.y / 2,
-					otherTransform.position.z + otherTransform.scale.z / 2
-				};
-
-				if (CheckCollisionBoxes(draggedBox, otherBox)) {
-					// Handle collision - could snap back or prevent movement
-					// For now, just change color to indicate collision
-					if (registry.all_of<c_Color>(m_draggedEntity)) {
-						auto& color = registry.get<c_Color>(m_draggedEntity);
-						color.a = 230;
-						color.b = 41;
-						color.g = 55;
-					}
-					break;
-				}
-				else {
-					if (registry.all_of<c_Color>(m_draggedEntity)) {
-						auto& color = registry.get<c_Color>(m_draggedEntity);
-						color.a = 255;
-						color.b = 255;
-						color.g = 255;
-					}
-				}
+			// Optional: change color during drag
+			if (registry.all_of<c_Color>(m_draggedEntity)) {
+				auto& color = registry.get<c_Color>(m_draggedEntity);
+				color.r = 0;
+				color.g = 200;
+				color.b = 0;
 			}
 		}
 

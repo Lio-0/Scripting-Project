@@ -111,10 +111,21 @@ int main()
     Texture2D orbTexture = LoadTexture("assets/orb_texture.png");
     renderer.LoadTexture("orb_texture", orbTexture);
 
+    bool cursorOn = false;
+
 	while (!WindowShouldClose())
 	{
         // Update
         //----------------------------------------------------------------------------------
+
+        if (!cursorOn && IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+            EnableCursor();
+            cursorOn = !cursorOn;
+        }
+        else if (cursorOn && IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+            DisableCursor();
+            cursorOn = !cursorOn;
+        }
 
         if (IsKeyPressed(KEY_FIVE))
         {
