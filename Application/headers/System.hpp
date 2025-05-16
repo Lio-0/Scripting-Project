@@ -315,25 +315,23 @@ public:
 			Vector2 mousePos = GetMousePosition();
 			Ray ray = GetMouseRay(mousePos, *m_camera);
 
-			// Intersect with Z-plane of entity
-			float planeZ = transform.position.z;
-			float distance = (planeZ - ray.position.z) / ray.direction.z;
-			Vector3 target = Vector3Add(ray.position, Vector3Scale(ray.direction, distance));
+			// Calculate a drag distance based on initial position
+			float dragDistance = Vector3Distance(m_camera->position, { transform.position.x, transform.position.y, transform.position.z });
+
+			// Project along the ray at the same approximate distance
+			Vector3 target = Vector3Add(ray.position, Vector3Scale(ray.direction, dragDistance));
 
 			transform.position.x = target.x;
 			transform.position.y = target.y;
-			// Optionally lock z to original plane
-			transform.position.z = planeZ;
+			transform.position.z = target.z;
 
-			// Optional: change color during drag
 			if (registry.all_of<c_Color>(m_draggedEntity)) {
 				auto& color = registry.get<c_Color>(m_draggedEntity);
 				color.r = 0;
 				color.g = 200;
 				color.b = 0;
 			}
+			return false;
 		}
-
-		return false;
-	}
+	};
 };
