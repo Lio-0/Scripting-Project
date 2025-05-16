@@ -7,7 +7,6 @@
 #include "raymath.h"
 #include <iostream>
 
-
 class System
 {
 	public:
@@ -52,6 +51,10 @@ public:
 
 	bool OnUpdate(entt::registry& registry, float delta) final
 	{
+		if (IsKeyPressed(KEY_ONE))
+			activeCamID = 0;
+		if (IsKeyPressed(KEY_TWO))
+			activeCamID = 1;
 
 		auto view = registry.view<c_Camera, c_Transform>();
 
@@ -65,17 +68,35 @@ public:
 			}
 			});
 
-		camera->position = { t.position.x + c.positionOffset.x, t.position.y + c.positionOffset.y, t.position.z + c.positionOffset.z };
-		camera->target = { c.target.x, c.target.y, c.target.z };
+		if (activeCamID == 0)
+		{
+			camera->position = { t.position.x + c.positionOffset.x, t.position.y + c.positionOffset.y, t.position.z + c.positionOffset.z };
+			camera->target = { c.target.x, c.target.y, c.target.z };
 
-		UpdateCameraPro(camera,
-			Vector3{0, 0, 0},
-			Vector3{
-				GetMouseDelta().x * delta * 2,   // Rotation: yaw
-				GetMouseDelta().y * delta * 2,   // Rotation: pitch
-				0.0f                         // Rotation: roll
-			},
-			0);                              // Move to target (zoom)
+			UpdateCameraPro(camera,
+				Vector3{ 0, 0, 0 },
+				Vector3{
+					GetMouseDelta().x * delta * 2,   // Rotation: yaw
+					GetMouseDelta().y * delta * 2,   // Rotation: pitch
+					0.0f                         // Rotation: roll
+				},
+				0);
+		}
+		else
+		{
+			if (IsCursorHidden())
+			{
+				UpdateCamera(camera, CAMERA_FREE);
+
+
+				if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+					EnableCursor();
+
+				
+			}
+			if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+				DisableCursor();
+		}
 
 		view.each([&](c_Camera& cam, c_Transform& transform)
 			{
