@@ -39,12 +39,6 @@ int main()
     luaL_dofile(L, "scripts/initLevel.lua");
     GameConsole::DumpError(L);
 
-    for (size_t i = 0; i < 10; i++)
-    {
-        luaL_dofile(L, "scripts/createBlock.lua");
-        GameConsole::DumpError(L);
-    }
-
     luaL_dofile(L, "scripts/initEditorMenu.lua");
     GameConsole::DumpError(L);
 
@@ -77,7 +71,7 @@ int main()
     renderer.LoadModel("rat", ratModel);
     Model orbModel = LoadModel("assets/orb.obj");
     renderer.LoadModel("orb", orbModel);
-    Mesh sphere = GenMeshSphere(200.0f, 50, 50);
+    Mesh sphere = GenMeshSphere(500.0f, 50, 50);
     Model skybox = LoadModelFromMesh(sphere);
     renderer.LoadModel("skybox", skybox);
 

@@ -46,7 +46,10 @@ function orbButton:OnUpdate(delta)
 end
 
 function orbButton:OnClick(delta)
-	dofile("scripts/createOrb.lua")
+	co = coroutine.create(function ()
+           dofile("scripts/createOrb.lua")
+         end)
+	coroutine.resume(co)
 end
 
 return orbButton

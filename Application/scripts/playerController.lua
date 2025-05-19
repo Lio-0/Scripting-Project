@@ -25,7 +25,7 @@ function playerController:OnCreate()
 
 		scale = {
 			x = 0.3,
-			y = 1,
+			y = 2,
 			z = 0.3
 		}
 	}
@@ -96,12 +96,6 @@ function playerController:OnUpdate(delta)
 		velocity.z = velocity.z + delta * viewDirNoY.x * (-math.sin(math.rad(90))) * (30 + 50 * bton(input.IsKeyDown(340)))
 	end
 
-	if input.IsKeyDown(341) then
-		camera.offset.y = 0.5
-	else
-		camera.offset.y = 1
-	end
-
 	-- Space = 32
 	if (input.IsKeyDown(32) and grounded) then
 
@@ -150,11 +144,16 @@ function playerController:OnUpdate(delta)
 	end
 
 	--Current collision calculation
-	if transform.position.y < 0.5 then
-		transform.position.y = 0.5
-		grounded = true
-	else
-		velocity.y = velocity.y - 10 * delta
+	if transform.position.y < -20 then
+		transform.position.x = 0
+		transform.position.y = 2
+		transform.position.z = 0
+	end
+
+	velocity.y = velocity.y - 10 * delta
+
+	if velocity.y < -10 then
+		velocity.y = -10
 	end
 
 	--Update camera target location based on viewDirection and player position

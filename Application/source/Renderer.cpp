@@ -44,8 +44,7 @@ void Renderer::LoadTexture(const std::string& name, Texture2D texture)
 
 void Renderer::Draw(const std::vector<RenderData>& objects)
 {
-    DrawGrid(100, 1.0f);
-    DrawPlane({0,0,0}, {100, 100}, GRAY);
+    DrawGrid(100, 5.0f);
 
     for (const auto& obj : objects)
     {
