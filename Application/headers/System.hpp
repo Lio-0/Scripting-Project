@@ -155,7 +155,6 @@ public:
 							{
 								b2.min = { pT.position.x - pT.scale.x / 2, pT.position.y - pT.scale.y / 2, pT.position.z - pT.scale.z / 2 };
 								b2.max = { pT.position.x + pT.scale.x / 2, pT.position.y + pT.scale.y / 2, pT.position.z + pT.scale.z / 2 };
-						
 								if (CheckCollisionBoxes(bx, b2))
 								{
 									collisionX = true;
@@ -281,12 +280,30 @@ class DraggingSystem : public System
 	Camera* m_camera;
 	entt::entity m_draggedEntity = entt::null;
 
+	enum class TransformMode {
+		Position,
+		ScaleX,
+		ScaleY,
+		ScaleZ
+	};
+
+	TransformMode m_mode = TransformMode::Position;
+	float m_lastModeSwitchTime = 0.0f;
+	const float m_modeSwitchCooldown = 0.2f;
+
 public:
 	DraggingSystem(lua_State*, Camera* camera) : m_camera(camera) {}
 
 	bool OnUpdate(entt::registry& registry, float delta) override
 	{
 		auto view = registry.view<c_Selected, c_Transform, c_Collision>();
+
+		// Handle mode switching
+		float currentTime = GetTime();
+		if (IsKeyPressed(KEY_R) && (currentTime - m_lastModeSwitchTime > m_modeSwitchCooldown)) {
+			m_lastModeSwitchTime = currentTime;
+			m_mode = static_cast<TransformMode>((static_cast<int>(m_mode) + 1) % 4);
+		}
 
 		// Start dragging if mouse pressed on a selected entity
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -339,6 +356,9 @@ public:
 			// Calculate a drag distance based on initial position
 			float dragDistance = Vector3Distance(m_camera->position, { transform.position.x, transform.position.y, transform.position.z });
 
+			float scroll = GetMouseWheelMove(); // Positive for forward, negative for backward
+			dragDistance += scroll * 0.5f; // Scale to control sensitivity
+
 			// Project along the ray at the same approximate distance
 			Vector3 target = Vector3Add(ray.position, Vector3Scale(ray.direction, dragDistance));
 
@@ -352,9 +372,31 @@ public:
 				color.g = 200;
 				color.b = 0;
 			}
-			return false;
-		}
-	};
+
+			// Apply Q/E for transformation
+			const float step = delta;
+
+			if (IsKeyDown(KEY_Q)) {
+				switch (m_mode) {
+				case TransformMode::Position: transform.position.z -= step; break;
+				case TransformMode::ScaleX:   transform.scale.x = fmaxf(0.1f, transform.scale.x - step); break;
+				case TransformMode::ScaleY:   transform.scale.y = fmaxf(0.1f, transform.scale.y - step); break;
+				case TransformMode::ScaleZ:   transform.scale.z = fmaxf(0.1f, transform.scale.z - step); break;
+				}
+			}
+			if (IsKeyDown(KEY_E)) {
+				switch (m_mode) {
+				case TransformMode::Position: transform.position.z += step; break;
+				case TransformMode::ScaleX:   transform.scale.x += step; break;
+				case TransformMode::ScaleY:   transform.scale.y += step; break;
+				case TransformMode::ScaleZ:   transform.scale.z += step; break;
+				}
+			}
+
+
+		};
+		return false;
+	}
 };
 
 class ButtonSystem : public System
@@ -388,4 +430,5 @@ public:
 
 		return false;
 	}
+
 };
