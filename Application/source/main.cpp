@@ -12,50 +12,84 @@
 
 #define MAX_COLUMNS 10
 
-int main()
+enum class GameState
 {
-    srand((unsigned int)time(NULL));
+    Menu,
+    Game,
+    Editing,
+    GameOver
+};
 
-    std::cout << "Hello Bergman!" << std::endl;
-    // LUA SKIT
-    //Rekommenderat att ha ett men går att ha flera om det behövs
-    lua_State* L = luaL_newstate();
-
-    ////Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
-    luaL_openlibs(L);
-
-    LuaInput input(L);
-    Scene scene(L);
+void SetUpGameScene(lua_State* L, Camera& camera, Scene &scene)
+{
     Scene::lua_openscene(L, &scene);
-    Camera camera;
     scene.CreateSystem<BehaviourSystem>(L);
-    scene.CreateSystem<CameraSystem>(&camera);
+    scene.CreateSystem<CameraSystem>(&camera, 0);
     scene.CreateSystem<CollisionSystem>(L, 0, 1);
     scene.CreateSystem<CollisionSystem>(L, 2, 0);
-    scene.CreateSystem<SelectionSystem>(L, &camera);
-    scene.CreateSystem<DraggingSystem>(L, &camera);
     scene.CreateSystem<ButtonSystem>(L);
 
     luaL_dofile(L, "scripts/initLevel.lua");
     GameConsole::DumpError(L);
+}
+
+void SetUpEditingScene(lua_State* L, Camera& camera, Scene& scene)
+{
+    Scene::lua_openscene(L, &scene);
+    scene.CreateSystem<CameraSystem>(&camera, 1);
+    scene.CreateSystem<SelectionSystem>(L, &camera);
+    scene.CreateSystem<DraggingSystem>(L, &camera);
+    scene.CreateSystem<ButtonSystem>(L);
 
     luaL_dofile(L, "scripts/initEditorMenu.lua");
     GameConsole::DumpError(L);
+}
+
+int main()
+{
+    srand((unsigned int)time(NULL));
+
+    // LUA SKIT
+    //Rekommenderat att ha ett men går att ha flera om det behövs
+    lua_State* L = luaL_newstate();
+
+    //Camera setup
+
+    Camera camera;
+
+    
+    //Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
+    luaL_openlibs(L);
+    LuaInput input(L);
+
+    //Scenes
+    Scene GameScene(L);
+    Scene EditingScene(L);
+
+
+    //Scene Setup functions
+    SetUpGameScene(L, camera, GameScene);
+    SetUpEditingScene(L, camera, EditingScene);
+
+    //Start game in GameScene for now
+    GameState currentState = GameState::Game;
+    Scene* currentScene = &GameScene;
+    Scene::lua_openscene(L, &GameScene);
 
 	const int screenWidth = 800 * 2;
 	const int screenHeight = 450 * 2;
 
 	InitWindow(screenWidth, screenHeight, "Jonas Jump");
 
-	// Define the camera to look into our 3d world (position, target, up vector)
-	camera = { 0 };
-	camera.position = { 0.0f, 2.0f, 4.0f };    // Camera position
-	camera.target = { 0.0f, 0.0f, 0.0f };      // Camera looking at point
-	camera.up = { 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-	camera.fovy = 60.0f;                                // Camera field-of-view Y
-	camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
+    // Define the camera to look into our 3d world (position, target, up vector)
+    camera = { 0 };
+    camera.position = { 0.0f, 2.0f, 4.0f };    // Camera position
+    camera.target = { 0.0f, 0.0f, 0.0f };      // Camera looking at point
+    camera.up = { 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+    camera.fovy = 60.0f;                                // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
 
-	int cameraMode = CAMERA_FIRST_PERSON;
+    int cameraMode = CAMERA_FIRST_PERSON;
 
     Vector3 lookDirection = { 0, 0, 1.0f };
 
@@ -91,16 +125,21 @@ int main()
         // Update
         //----------------------------------------------------------------------------------
 
-
-        if (IsKeyPressed(KEY_FIVE))
-        {
-            if (luaL_dofile(L, "scripts/createOrb.lua") != LUA_OK)
+        if (IsKeyPressed(KEY_TAB)) {
+            if (currentScene == &GameScene)
             {
-                GameConsole::DumpError(L);
+                currentScene = &EditingScene;
+                Scene::lua_openscene(L, &EditingScene);
+            }  
+            else
+            {
+                currentScene = &GameScene;
+                Scene::lua_openscene(L, &GameScene);
             }
+               
         }
 
-        scene.UpdateSystems(GetFrameTime());
+        currentScene->UpdateSystems(GetFrameTime());
 
 
         // Draw
@@ -109,7 +148,9 @@ int main()
 
         ClearBackground(RAYWHITE);
         
-        scene.DrawScene(renderer, camera);
+
+        currentScene->DrawScene(renderer, camera);
+
         
         // Draw info boxes
         DrawRectangle(5, 5, 310, 115, Fade(SKYBLUE, 0.5f));
@@ -118,7 +159,7 @@ int main()
         DrawText("Camera controls: Up, Down, Left, Right, Enter, Right-Shift", 15, 15, 10, BLACK);
         DrawText("Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
         {
-            int collectibleCount = scene.GetRegistry()->view<c_Collectible>().size();
+            int collectibleCount = currentScene->GetRegistry()->view<c_Collectible>().size();
             std::string text = std::string("Collectibles: ") + std::to_string(collectibleCount);
             DrawText(text.c_str(), 15, 85, 10, BLACK);
 

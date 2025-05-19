@@ -23,12 +23,6 @@ local transform = {
 	}
 }
 
-scene.SetComponent(entity, "transform", transform)
-
-transform.position.y = 1 --Camera height
-transform.rotation.z = 1 --Camera look direction
-scene.SetComponent(entity, "camera", 1, transform.position, transform.rotation)
-
 entity = scene.CreateEntity()
 scene.SetComponent(entity, "visual", "skybox", "skybox_texture", true)
 scene.SetComponent(entity, "color", {r = 255, g = 255, b = 255})

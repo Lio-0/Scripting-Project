@@ -47,14 +47,10 @@ class CameraSystem : public System
 	Camera* camera;
 	int activeCamID;
 public:
-	CameraSystem(Camera* camera) : camera(camera), activeCamID(0) {}
+	CameraSystem(Camera* camera, int camID) : camera(camera), activeCamID(camID) {}
 
 	bool OnUpdate(entt::registry& registry, float delta) final
 	{
-		if (IsKeyPressed(KEY_ONE))
-			activeCamID = 0;
-		if (IsKeyPressed(KEY_TWO))
-			activeCamID = 1;
 
 		auto view = registry.view<c_Camera, c_Transform>();
 
