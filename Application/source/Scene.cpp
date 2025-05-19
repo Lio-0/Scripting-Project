@@ -85,6 +85,19 @@ void lua_pushvector(lua_State* L, const c_Vector& vec)
 	lua_setfield(L, -2, "z");
 }
 
+void lua_pushcolor(lua_State* L, const c_Color& col)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, col.a);
+	lua_setfield(L, -2, "a");
+	lua_pushnumber(L, col.r);
+	lua_setfield(L, -2, "r");
+	lua_pushnumber(L, col.g);
+	lua_setfield(L, -2, "g");
+	lua_pushnumber(L, col.b);
+	lua_setfield(L, -2, "b");
+}
+
 void lua_pushtransform(lua_State* L, const c_Transform& transform)
 {
 	lua_newtable(L);
@@ -157,6 +170,50 @@ c_Color lua_tocolor(lua_State* L, int index)
 	lua_pop(L, 1);
 
 	return color;
+}
+
+
+c_Button lua_tobutton(lua_State* L, int index)
+{
+	c_Button btn;
+
+	lua_getfield(L, index, "label");
+	btn.label = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "x");
+	btn.posX = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "y");
+	btn.posY = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "width");
+	btn.width = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "height");
+	btn.height = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "textColour");
+	btn.textColour = lua_tocolor(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "textX");
+	btn.textPosX = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "textY");
+	btn.textPosY = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "textY");
+	btn.fontSize = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	return btn;
 }
 
 int Scene::lua_CreateEntity(lua_State* L)
@@ -247,6 +304,16 @@ int Scene::lua_SetComponent(lua_State* L)
 		c_Color color = lua_tocolor(L, 3);
 		scene->SetComponent<c_Color>(entity, color);
 	}
+	else if (type == "button")
+	{
+		if (!lua_istable(L, 3))
+		{
+			return luaL_error(L, "Expected table for button");
+		}
+
+		c_Button btn = lua_tobutton(L, 3);
+		scene->SetComponent<c_Button>(entity, btn);
+	}
 
 	return 0;
 }
@@ -305,6 +372,14 @@ int Scene::lua_HasComponent(lua_State* L)
 	else if (type == "collectible")
 	{
 		hasComponent = scene->HasComponents<c_Collectible>(entity);
+	}
+	else if (type == "button")
+	{
+		hasComponent = scene->HasComponents<c_Button>(entity);
+	}
+	else if (type == "color")
+	{
+		hasComponent = scene->HasComponents<c_Color>(entity);
 	}
 
 	lua_pushboolean(L, hasComponent);
@@ -372,22 +447,46 @@ int Scene::lua_GetComponent(lua_State* L)
 	{
 		c_Color& color = scene->GetComponent<c_Color>(entity);
 
-		lua_newtable(L);
-
-		lua_pushinteger(L, color.r);
-		lua_setfield(L, -2, "r");
-
-		lua_pushinteger(L, color.g);
-		lua_setfield(L, -2, "g");
-
-		lua_pushinteger(L, color.b);
-		lua_setfield(L, -2, "b");
-
-		lua_pushinteger(L, color.a);
-		lua_setfield(L, -2, "a");
+		lua_pushcolor(L, color);
 
 		return 1;
 	}
+	else if (type == "button" && scene->HasComponents<c_Button>(entity))
+	{
+		c_Button& btn = scene->GetComponent<c_Button>(entity);
+
+		lua_newtable(L);
+
+		lua_pushinteger(L, btn.posX);
+		lua_setfield(L, -2, "posX");
+
+		lua_pushinteger(L, btn.posY);
+		lua_setfield(L, -2, "posY");
+
+		lua_pushinteger(L, btn.width);
+		lua_setfield(L, -2, "width");
+
+		lua_pushinteger(L, btn.height);
+		lua_setfield(L, -2, "height");
+
+		lua_pushstring(L, btn.label.c_str());
+		lua_setfield(L, -2, "label");
+
+		lua_pushcolor(L, btn.textColour);
+		lua_setfield(L, -2, "textColour");
+
+		lua_pushinteger(L, btn.fontSize);
+		lua_setfield(L, -2, "fontSize");
+
+		lua_pushinteger(L, btn.textPosX);
+		lua_setfield(L, -2, "textPosX");
+
+		lua_pushinteger(L, btn.textPosY);
+		lua_setfield(L, -2, "textPosY");
+
+		return 1;
+	}
+
 	lua_pushnil(L);
 	return 1;
 }

@@ -356,3 +356,34 @@ public:
 		}
 	};
 };
+
+class ButtonSystem : public System
+{
+	lua_State* L;
+public:
+	ButtonSystem(lua_State* L) : L(L) {}
+
+	bool OnUpdate(entt::registry& registry, float delta) final
+	{
+		auto view = registry.view<c_Button, c_Behaviour>();
+
+		view.each([&](c_Button button, c_Behaviour script)
+			{
+				if (CheckCollisionPointRec(GetMousePosition(), Rectangle(button.posX, button.posY, button.width, button.height)))
+				{
+					lua_rawgeti(L, LUA_REGISTRYINDEX, script.LuaTableRef);
+					lua_getfield(L, -1, "OnClick");
+					lua_pushvalue(L, -2);
+					lua_pushnumber(L, delta);
+
+					if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+					{
+						GameConsole::DumpError(L);
+					}
+
+					lua_pop(L, 1);
+				}
+			}
+		);
+	}
+};

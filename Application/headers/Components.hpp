@@ -57,3 +57,17 @@ struct c_Color
 {
     unsigned char r, g, b, a;
 };
+
+struct c_Button 
+{
+    std::string label;
+    int posX;
+    int posY;
+    int width;
+    int height;
+    c_Color textColour;
+    int textPosX;
+    int textPosY;
+    int fontSize;
+    bool active;
+};
