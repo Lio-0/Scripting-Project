@@ -44,7 +44,9 @@ void Renderer::LoadTexture(const std::string& name, Texture2D texture)
 
 void Renderer::Draw(const std::vector<RenderData>& objects)
 {
-    
+    DrawGrid(100, 1.0f);
+    DrawPlane({0,0,0}, {100, 100}, GRAY);
+
     for (const auto& obj : objects)
     {
         // Find the model and texture
@@ -67,8 +69,20 @@ void Renderer::Draw(const std::vector<RenderData>& objects)
                 model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = baseText->second;
             }
                 
-            
-            DrawModelEx(model, obj.position, { 0, 1.0f, 0 }, obj.rotation.x, obj.scale, {obj.r, obj.g, obj.b, obj.a});
+            if (obj.modelName == "skybox")
+                DrawModelEx(model, obj.position, { 1.0f, 0, 0 }, 90, obj.scale, { obj.r, obj.g, obj.b, obj.a });
+            else
+                DrawModelEx(model, obj.position, { 0, 1.0f, 0 }, obj.rotation.x, obj.scale, {obj.r, obj.g, obj.b, obj.a});
         }
+    }
+}
+
+void Renderer::DrawUI(const std::vector<UIData>& uiObjects)
+{
+    for (const auto& obj : uiObjects)
+    {
+        DrawRectangle(obj.posX, obj.posY, obj.width, obj.height, { obj.br, obj.bg, obj.bb, obj.ba });
+        DrawRectangleLines(obj.posX, obj.posY, obj.width, obj.height, BLACK);
+        DrawText(obj.label.c_str(), obj.posX + obj.textPosX, obj.posY + obj.textPosY, obj.fontSize, { obj.tr, obj.tg, obj.tb, obj.ta });
     }
 }

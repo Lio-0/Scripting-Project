@@ -5,9 +5,9 @@ local vector = require("vector")
 function orb:OnCreate()
 	local transform = {
 		position = {
-			x = math.random(0, 10),
-			y = 1,
-			z = math.random(0, 10)
+			x = 0,
+			y = 7,
+			z = 0
 		},
 
 		rotation = {

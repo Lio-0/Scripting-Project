@@ -3,7 +3,7 @@ local entity = scene.CreateEntity()
 local transform = {
 	position = {
 		x = 0,
-		y = 2,
+		y = 6,
 		z = 0
 	},
 

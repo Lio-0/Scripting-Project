@@ -178,14 +178,14 @@ c_Button lua_tobutton(lua_State* L, int index)
 	c_Button btn;
 
 	lua_getfield(L, index, "label");
-	btn.label = lua_tointeger(L, -1);
+	btn.label = lua_tostring(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, index, "x");
+	lua_getfield(L, index, "posX");
 	btn.posX = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, index, "y");
+	lua_getfield(L, index, "posY");
 	btn.posY = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 
@@ -201,15 +201,15 @@ c_Button lua_tobutton(lua_State* L, int index)
 	btn.textColour = lua_tocolor(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, index, "textX");
+	lua_getfield(L, index, "textPosX");
 	btn.textPosX = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, index, "textY");
+	lua_getfield(L, index, "textPosY");
 	btn.textPosY = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, index, "textY");
+	lua_getfield(L, index, "fontSize");
 	btn.fontSize = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 
@@ -532,7 +532,7 @@ int Scene::RefAndPushBehaviour(lua_State* L, int entity, const char* path)
 	return luaTableRef;
 }
 
-void Scene::DrawScene(Renderer& renderer)
+void Scene::DrawScene(Renderer& renderer, Camera& camera)
 {
 	std::vector<RenderData> renderObjects;
 
@@ -557,5 +557,25 @@ void Scene::DrawScene(Renderer& renderer)
 		renderObjects.push_back(data);
 	});
 
+	std::vector<UIData> uiObjects;
+	auto uiView = m_registry.view<c_Color, c_Button>();
+
+	uiView.each([&](const c_Color& color, const c_Button& button)
+		{
+			if (!button.active)
+				return;
+
+			UIData data(color.r, color.g, color.b, color.a, 
+				button.label, button.posX, button.posY, button.width, button.height, 
+				button.textColour.r, button.textColour.g, button.textColour.b, button.textColour.a, 
+				button.textPosX, button.textPosY, button.fontSize);
+
+			uiObjects.push_back(data);
+		});
+
+	BeginMode3D(camera);
 	renderer.Draw(renderObjects);
+	EndMode3D();
+
+	renderer.DrawUI(uiObjects);
 }

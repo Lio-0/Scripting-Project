@@ -369,7 +369,7 @@ public:
 
 		view.each([&](c_Button button, c_Behaviour script)
 			{
-				if (CheckCollisionPointRec(GetMousePosition(), Rectangle(button.posX, button.posY, button.width, button.height)))
+				if (CheckCollisionPointRec(GetMousePosition(), Rectangle(button.posX, button.posY, button.width, button.height)) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 				{
 					lua_rawgeti(L, LUA_REGISTRYINDEX, script.LuaTableRef);
 					lua_getfield(L, -1, "OnClick");
@@ -385,5 +385,7 @@ public:
 				}
 			}
 		);
+
+		return false;
 	}
 };

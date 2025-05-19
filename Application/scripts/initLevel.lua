@@ -23,14 +23,24 @@ local transform = {
 	}
 }
 
-local vector = {
-	x = 0,
-	y = 0,
-	z = 0
-}
-
-scene.SetComponent(self.ID, "transform", transform)
+scene.SetComponent(entity, "transform", transform)
 
 transform.position.y = 1 --Camera height
 transform.rotation.z = 1 --Camera look direction
 scene.SetComponent(entity, "camera", 1, transform.position, transform.rotation)
+
+entity = scene.CreateEntity()
+scene.SetComponent(entity, "visual", "skybox", "skybox_texture", true)
+scene.SetComponent(entity, "color", {r = 255, g = 255, b = 255})
+
+transform.position.x = 0
+transform.position.y = 0
+transform.position.z = 0
+transform.rotation.y = 0
+transform.rotation.z = 0
+transform.rotation.x = 0
+transform.scale.x = -1
+transform.scale.y = -1
+transform.scale.z = -1
+
+scene.SetComponent(entity, "transform", transform)

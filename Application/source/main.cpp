@@ -12,28 +12,6 @@
 
 #define MAX_COLUMNS 10
 
-
-
-//Function som körs parallelt av tråd
-void ConsoleThreadFunction(lua_State* L)
-{
-
-	//Läs console input
-	std::string input;
-	//while (GetConsoleWindow())
-	//{
-	//	std::cout << "> ";
-	//	std::getline(std::cin, input);
-
-	//	//Försök köra strängen som lua kod
-	//	if (luaL_dostring(L, input.c_str()) != LUA_OK)
-	//	{
-	//		DumpError(L);
-	//	}
-	//}
-}
-
-
 int main()
 {
     srand((unsigned int)time(NULL));
@@ -56,22 +34,19 @@ int main()
     scene.CreateSystem<CollisionSystem>(L, 2, 0);
     scene.CreateSystem<SelectionSystem>(L, &camera);
     scene.CreateSystem<DraggingSystem>(L, &camera);
+    scene.CreateSystem<ButtonSystem>(L);
 
     luaL_dofile(L, "scripts/initLevel.lua");
-
-    ////Skapa tråd
-    //std::thread consoleThread(ConsoleThreadFunction, L);
+    GameConsole::DumpError(L);
 
     for (size_t i = 0; i < 10; i++)
     {
         luaL_dofile(L, "scripts/createBlock.lua");
         GameConsole::DumpError(L);
     }
-    for (size_t i = 0; i < 10; i++)
-    {
-        luaL_dofile(L, "scripts/createPlatform.lua");
-        GameConsole::DumpError(L);
-    }
+
+    luaL_dofile(L, "scripts/initEditorMenu.lua");
+    GameConsole::DumpError(L);
 
 	const int screenWidth = 800 * 2;
 	const int screenHeight = 450 * 2;
@@ -102,6 +77,9 @@ int main()
     renderer.LoadModel("rat", ratModel);
     Model orbModel = LoadModel("assets/orb.obj");
     renderer.LoadModel("orb", orbModel);
+    Mesh sphere = GenMeshSphere(200.0f, 50, 50);
+    Model skybox = LoadModelFromMesh(sphere);
+    renderer.LoadModel("skybox", skybox);
 
     //Textures
     Texture2D greyTexture = LoadTexture("assets/grey_texture.png");
@@ -110,6 +88,8 @@ int main()
     renderer.LoadTexture("base_texture", baseTexture);
     Texture2D orbTexture = LoadTexture("assets/orb_texture.png");
     renderer.LoadTexture("orb_texture", orbTexture);
+    Texture2D panorama = LoadTexture("assets/skybox.png");
+    renderer.LoadTexture("skybox_texture", panorama);
 
 
 	while (!WindowShouldClose())
@@ -133,20 +113,10 @@ int main()
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-
         ClearBackground(RAYWHITE);
-
-        BeginMode3D(camera);
-
-        DrawPlane({ 0.0f, 0.0f, 0.0f }, { 32.0f, 32.0f }, GRAY); // Draw ground
         
-
-        scene.DrawScene(renderer);
-
-        EndMode3D();
-
+        scene.DrawScene(renderer, camera);
         
-
         // Draw info boxes
         DrawRectangle(5, 5, 310, 115, Fade(SKYBLUE, 0.5f));
         DrawRectangleLines(5, 5, 310, 115, BLUE);

@@ -107,7 +107,7 @@ function playerController:OnUpdate(delta)
 
 		--Initial launch speed for better gameplay feel
 		if input.IsKeyPressed(32) or velocity.y < 0 then
-			velocity.y = 0.5
+			velocity.y = 0.3
 		end
 
 		--Accelerate upwards as long as player is holding space

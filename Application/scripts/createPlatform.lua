@@ -2,9 +2,9 @@ local entity = scene.CreateEntity()
 
 local transform = {
 	position = {
-		x = 2 + 2 * entity,
-		y = - 4.5 + 0.5 * entity,
-		z = 5
+		x = 0,
+		y = 5,
+		z = 0
 	},
 
 	rotation = {
