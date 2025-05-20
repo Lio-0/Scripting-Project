@@ -9,6 +9,7 @@
 #include "entt.hpp"
 #include "Scene.hpp"
 #include "LuaInput.hpp"
+#include "SceneManager.hpp"
 
 #define MAX_COLUMNS 10
 
@@ -61,11 +62,16 @@ int main()
     //Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
     luaL_openlibs(L);
     LuaInput input(L);
+    SceneManager sm(L);
 
     //Scenes
     Scene GameScene(L);
     Scene EditingScene(L);
+    Scene MenuScene(L);
 
+    sm.AddScene(&GameScene, "game");
+    sm.AddScene(&EditingScene, "editor");
+    sm.AddScene(&MenuScene, "manu");
 
     //Scene Setup functions
     SetUpGameScene(L, camera, GameScene);
@@ -105,6 +111,10 @@ int main()
     renderer.LoadModel("rat", ratModel);
     Model orbModel = LoadModel("assets/orb.obj");
     renderer.LoadModel("orb", orbModel);
+    Model goalLockedModel = LoadModel("assets/goal_locked.obj");
+    renderer.LoadModel("goal_locked", goalLockedModel);
+    Model goalOpenModel = LoadModel("assets/goal_open.obj");
+    renderer.LoadModel("goal_open", goalOpenModel);
     Mesh sphere = GenMeshSphere(500.0f, 50, 50);
     Model skybox = LoadModelFromMesh(sphere);
     renderer.LoadModel("skybox", skybox);
@@ -116,6 +126,10 @@ int main()
     renderer.LoadTexture("base_texture", baseTexture);
     Texture2D orbTexture = LoadTexture("assets/orb_texture.png");
     renderer.LoadTexture("orb_texture", orbTexture);
+    Texture2D goalLockedTexture = LoadTexture("assets/goal_locked.png");
+    renderer.LoadTexture("goal_locked", goalLockedTexture);
+    Texture2D goalOpenTexture = LoadTexture("assets/goal_open.png");
+    renderer.LoadTexture("goal_open", goalOpenTexture);
     Texture2D panorama = LoadTexture("assets/skybox.png");
     renderer.LoadTexture("skybox_texture", panorama);
 

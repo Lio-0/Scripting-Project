@@ -30,7 +30,6 @@ function orb:OnCreate()
 	scene.SetComponent(self.ID, "clickable")
 	scene.SetComponent(self.ID, "color", {r = 255, g = 255, b = 255})
 
-
 end
 
 function orb:OnUpdate(delta)

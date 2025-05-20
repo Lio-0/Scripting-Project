@@ -71,3 +71,8 @@ struct c_Button
     int fontSize;
     bool active;
 };
+
+struct c_Goal
+{
+    bool open;
+};
