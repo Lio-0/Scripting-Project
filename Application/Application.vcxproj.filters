@@ -7,6 +7,7 @@
     <ClInclude Include="headers\Renderer.hpp" />
     <ClInclude Include="headers\Scene.hpp" />
     <ClInclude Include="headers\System.hpp" />
+    <ClInclude Include="headers\SerializeHelper.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameConsole.cpp" />

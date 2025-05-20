@@ -74,6 +74,10 @@ Scene* lua_GetSceneUpValue(lua_State* L)
 	return static_cast<Scene*>(lua_touserdata(L, lua_upvalueindex(1)));
 }
 
+void Scene::ClearEntities() {
+	m_registry.clear();
+}
+
 void lua_pushvector(lua_State* L, const c_Vector& vec)
 {
 	lua_newtable(L);
@@ -111,6 +115,7 @@ void lua_pushtransform(lua_State* L, const c_Transform& transform)
 	lua_pushvector(L, transform.scale);
 	lua_setfield(L, -2, "scale");
 }
+
 
 c_Vector lua_getvector(lua_State* L, int index)
 {
@@ -215,6 +220,7 @@ c_Button lua_tobutton(lua_State* L, int index)
 
 	return btn;
 }
+
 
 int Scene::lua_CreateEntity(lua_State* L)
 {

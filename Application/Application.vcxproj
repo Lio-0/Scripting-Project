@@ -164,6 +164,7 @@
     <ClInclude Include="headers\LuaInput.hpp" />
     <ClInclude Include="headers\Renderer.hpp" />
     <ClInclude Include="headers\Scene.hpp" />
+    <ClInclude Include="headers\SerializeHelper.hpp" />
     <ClInclude Include="headers\System.hpp" />
   </ItemGroup>
   <ItemGroup>

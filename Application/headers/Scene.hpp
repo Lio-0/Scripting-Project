@@ -26,6 +26,7 @@ public:
 	bool IsEntity(int entity);
 	void RemoveEntity(int entity);
 	void DrawScene(Renderer& renderer, Camera& camera);
+	void ClearEntities();
 
 	//Systems
 
@@ -33,6 +34,7 @@ public:
 	void CreateSystem(Args... args);
 
 	void UpdateSystems(float delta);
+
 
 	//Components
 
