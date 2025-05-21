@@ -237,6 +237,22 @@ int Scene::lua_SetComponent(lua_State* L)
 	int entity = (int)lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
 
+	// Handle marker components early — no data needed
+	if (type == "clickable") {
+		scene->SetComponent<c_Clickable>(entity);
+		return 0;
+	}
+	else if (type == "selected") {
+		scene->SetComponent<c_Selected>(entity);
+		return 0;
+	}
+
+	// Now check that the value (3rd argument) exists for data components
+	if (lua_gettop(L) < 3) {
+		return luaL_error(L, "SetComponent: Missing value for component type '%s'", type.c_str());
+	}
+
+
 	if (type == "vector")
 	{
 		if (!lua_istable(L, 3)) {
@@ -292,14 +308,6 @@ int Scene::lua_SetComponent(lua_State* L)
 	{
 		int ID = (int)lua_tointeger(L, 3);
 		scene->SetComponent<c_Collectible>(entity, ID);
-	}
-	else if (type == "clickable")
-	{
-		scene->SetComponent<c_Clickable>(entity);
-	}
-	else if (type == "selected")
-	{
-		scene->SetComponent<c_Selected>(entity);
 	}
 	else if (type == "color")
 	{

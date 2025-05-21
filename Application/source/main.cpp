@@ -146,6 +146,15 @@ void SaveScene(entt::registry& registry, const std::string& path) {
     file.close();
 }
 
+void PrintLuaStack(lua_State* L) {
+    int top = lua_gettop(L);
+    std::cout << "[Lua Stack] Top = " << top << "\n";
+    for (int i = 1; i <= top; i++) {
+        int t = lua_type(L, i);
+        std::cout << i << ": " << lua_typename(L, t) << "\n";
+    }
+}
+
 void LoadScene(lua_State* L, const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
@@ -189,45 +198,77 @@ void LoadScene(lua_State* L, const std::string& path) {
 
         // Helper lambda with proper stack handling
         auto call_setcomponent = [&](const std::string& type, int nargs) {
+            // Save the top of the stack before any component data arguments
+            int top_before_args = lua_gettop(L) - nargs;
+
+            // Get scene table
             lua_getglobal(L, "scene");
+
+            // Get SetComponent function
             lua_getfield(L, -1, "SetComponent");
             if (!lua_isfunction(L, -1)) {
                 std::cerr << "Error: 'scene.SetComponent' is not a function\n";
-                lua_pop(L, 2);
+                lua_pop(L, 2); // Pop scene and non-function
                 return;
             }
 
-            // Push scene as self (first argument)
-            lua_pushvalue(L, -2);
 
-            // Push entity, type, and then the args
+            // Push entity ID
             lua_pushinteger(L, entity);
+
+            // Push component type
             lua_pushstring(L, type.c_str());
 
-            // The args should already be on the stack from the caller
-            // We expect them to be at the top
-
-            // Call SetComponent(scene, entity, type, ...)
-            if (lua_pcall(L, nargs + 3, 0, 0) != LUA_OK) {
-                std::cerr << "Error calling SetComponent: " << lua_tostring(L, -1) << "\n";
-                lua_pop(L, 1);
+            // Push component data arguments
+            for (int i = 1; i <= nargs; i++) {
+                // Calculate the correct stack index for each component data argument
+                lua_pushvalue(L, top_before_args + i);
             }
 
-            lua_pop(L, 1); // pop scene table
+            // Push 'self' parameter (scene table)
+            lua_pushvalue(L, -2);
+            
+            // Call function with nargs + 3 parameters (self + entity + type + component data)
+            if (lua_pcall(L, nargs + 3, 0, 0) != LUA_OK) {
+                std::cerr << "Error calling SetComponent for " << type << ": " << lua_tostring(L, -1) << "\n";
+                lua_pop(L, 2); // Pop error message and scene table
+                return;
+            }
+
+            // Pop scene table
+            lua_pop(L, 1);
+
+            // Pop the component data arguments
+            lua_settop(L, top_before_args);
             };
 
         if (entity_data.contains("transform")) {
             const auto& t = entity_data["transform"];
 
             lua_newtable(L);
-            for (const std::string& key : { "position", "rotation", "scale" }) {
-                lua_pushstring(L, key.c_str());
-                lua_newtable(L);
-                lua_pushstring(L, "x"); lua_pushnumber(L, t[key]["x"]); lua_settable(L, -3);
-                lua_pushstring(L, "y"); lua_pushnumber(L, t[key]["y"]); lua_settable(L, -3);
-                lua_pushstring(L, "z"); lua_pushnumber(L, t[key]["z"]); lua_settable(L, -3);
-                lua_settable(L, -3);
-            }
+            // Position
+            lua_pushstring(L, "position");
+            lua_newtable(L);
+            lua_pushstring(L, "x"); lua_pushnumber(L, t["position"]["x"]); lua_settable(L, -3);
+            lua_pushstring(L, "y"); lua_pushnumber(L, t["position"]["y"]); lua_settable(L, -3);
+            lua_pushstring(L, "z"); lua_pushnumber(L, t["position"]["z"]); lua_settable(L, -3);
+            lua_settable(L, -3);
+
+            // Rotation
+            lua_pushstring(L, "rotation");
+            lua_newtable(L);
+            lua_pushstring(L, "x"); lua_pushnumber(L, t["rotation"]["x"]); lua_settable(L, -3);
+            lua_pushstring(L, "y"); lua_pushnumber(L, t["rotation"]["y"]); lua_settable(L, -3);
+            lua_pushstring(L, "z"); lua_pushnumber(L, t["rotation"]["z"]); lua_settable(L, -3);
+            lua_settable(L, -3);
+
+            // Scale
+            lua_pushstring(L, "scale");
+            lua_newtable(L);
+            lua_pushstring(L, "x"); lua_pushnumber(L, t["scale"]["x"]); lua_settable(L, -3);
+            lua_pushstring(L, "y"); lua_pushnumber(L, t["scale"]["y"]); lua_settable(L, -3);
+            lua_pushstring(L, "z"); lua_pushnumber(L, t["scale"]["z"]); lua_settable(L, -3);
+            lua_settable(L, -3);
 
             call_setcomponent("transform", 1);
         }
@@ -306,8 +347,6 @@ void LoadScene(lua_State* L, const std::string& path) {
         }
     }
 }
-
-
 
 int main()
 {
@@ -391,26 +430,24 @@ int main()
 
         if (IsKeyPressed(KEY_TAB)) {
             if (currentScene == &GameScene) {
-                // Byt till EditingScene
+                // Switch to EditingScene
                 currentScene = &EditingScene;
                 Scene::lua_openscene(L, &EditingScene);
             }
             else {
-                // Spara EditingScene till fil
+                // Save EditingScene to file
                 SaveScene(*EditingScene.GetRegistry(), "assets/savedScene.json");
 
-                // Byt till GameScene
+                // Switch to GameScene - REINITIALIZE PROPERLY
                 currentScene = &GameScene;
-                Scene::lua_openscene(L, &GameScene);
 
-                // Töm registry innan laddning (om du inte redan gör detta någon annanstans)
-                //GameScene.ClearEntities(); // <--- lägg till denna metod i Scene om den inte finns
+                // Clear existing systems and reinitialize
+                SetUpGameScene(L, camera, GameScene);  // Re-run the setup  
 
-                // Ladda scenen från fil
+                // Load scene from file
                 LoadScene(L, "assets/savedScene.json");
             }
         }
-
         currentScene->UpdateSystems(GetFrameTime());
 
 
@@ -437,7 +474,7 @@ int main()
 
             if (collectibleCount <= 0)
                 DrawText("YOU WIN!", screenWidth / 2 - 200, screenHeight / 2 - 50, 100, GREEN);
-        }
+        }    
         DrawText("5. Spawn Entities", 15, 105, 10, BLACK);
 
         DrawRectangle(600, 5, 195, 100, Fade(SKYBLUE, 0.5f));
