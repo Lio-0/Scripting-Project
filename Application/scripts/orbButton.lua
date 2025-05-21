@@ -1,10 +1,9 @@
 local orbButton = {}
 local mainColor = {a = 255, r = 255, g = 255, b = 255}
+local button = {}
 
 function orbButton:OnCreate()
-
-
-	local button = {
+	button = {
 		textColour = {
 		a = 255,
 		r = 0,
@@ -12,8 +11,8 @@ function orbButton:OnCreate()
 		b = 0
 		},
 
-		posX = 350,
-		posY = 200,
+		posX = 250,
+		posY = 100,
 		width = 100,
 		height = 40,
 		textPosX = 20,
@@ -28,7 +27,6 @@ end
 
 function orbButton:OnUpdate(delta)
 	local color = scene.GetComponent(self.ID, "color")
-	local button = scene.GetComponent(self.ID, "button")
 
 	local mouseX, mouseY = input.GetMousePosition()
 
@@ -43,6 +41,7 @@ function orbButton:OnUpdate(delta)
 	end
 
 	scene.SetComponent(self.ID, "color", color)
+	scene.SetComponent(self.ID, "button", button)
 end
 
 function orbButton:OnClick(delta)

@@ -18,6 +18,8 @@ LuaInput::LuaInput(lua_State* L) : m_luaState(L)
 		{"GetMouseWheelMove", lua_GetMouseWheelMove},
 		{"IsMouseButtonUp", lua_IsMouseButtonUp},
 		{"IsMouseButtonDown", lua_IsMouseButtonDown},
+		{"DisableCursor", lua_DisableCursor},
+		{"EnableCursor", lua_EnableCursor},
 		{NULL, NULL}
 	};
 
@@ -124,4 +126,17 @@ int LuaInput::lua_IsMouseButtonDown(lua_State* L)
 	lua_pushboolean(L, IsMouseButtonDown(button));
 
 	return 1;
+}
+
+int LuaInput::lua_DisableCursor(lua_State* L)
+{
+	DisableCursor();
+	return 0;
+}
+
+
+int LuaInput::lua_EnableCursor(lua_State* L)
+{
+	EnableCursor();
+	return 0;
 }

@@ -25,4 +25,7 @@ private:
 	static int lua_GetMouseWheelMove(lua_State* L);
 	static int lua_IsMouseButtonUp(lua_State* L);
 	static int lua_IsMouseButtonDown(lua_State* L);
+
+	static int lua_DisableCursor(lua_State* L);
+	static int lua_EnableCursor(lua_State* L);
 };

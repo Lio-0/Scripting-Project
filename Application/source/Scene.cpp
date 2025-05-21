@@ -314,6 +314,15 @@ int Scene::lua_SetComponent(lua_State* L)
 		c_Button btn = lua_tobutton(L, 3);
 		scene->SetComponent<c_Button>(entity, btn);
 	}
+	else if (type == "goal")
+	{
+		bool open = lua_toboolean(L, 3);
+		scene->SetComponent<c_Goal>(entity, open);
+	}
+	else if (type == "reset")
+	{
+		scene->SetComponent<c_Reset>(entity);
+	}
 
 	return 0;
 }
@@ -380,6 +389,14 @@ int Scene::lua_HasComponent(lua_State* L)
 	else if (type == "color")
 	{
 		hasComponent = scene->HasComponents<c_Color>(entity);
+	}
+	else if (type == "goal")
+	{
+		hasComponent = scene->HasComponents<c_Goal>(entity);
+	}
+	else if (type == "reset")
+	{
+		hasComponent = scene->HasComponents<c_Reset>(entity);
 	}
 
 	lua_pushboolean(L, hasComponent);
@@ -486,6 +503,12 @@ int Scene::lua_GetComponent(lua_State* L)
 
 		return 1;
 	}
+	if (type == "goal" && scene->HasComponents<c_Goal>(entity))
+	{
+		c_Goal& goal = scene->GetComponent<c_Goal>(entity);
+		lua_pushboolean(L, goal.open);
+		return 1;
+	}
 
 	lua_pushnil(L);
 	return 1;
@@ -578,4 +601,22 @@ void Scene::DrawScene(Renderer& renderer, Camera& camera)
 	EndMode3D();
 
 	renderer.DrawUI(uiObjects);
+}
+
+void Scene::Reset()
+{
+	auto view = m_registry.view<c_Reset, c_Behaviour>();
+
+	view.each([&](c_Behaviour& script) {
+			lua_rawgeti(m_luaState, LUA_REGISTRYINDEX, script.LuaTableRef);
+			lua_getfield(m_luaState, -1, "OnReset");
+			lua_pushvalue(m_luaState, -2);
+
+			if (lua_pcall(m_luaState, 1, 0, 0) != LUA_OK)
+			{
+				GameConsole::DumpError(m_luaState);
+			}
+
+			lua_pop(m_luaState, 1);
+		});
 }

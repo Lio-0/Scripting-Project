@@ -44,11 +44,6 @@ struct c_Collectible
     int ID;
 };
 
-struct c_CollectibleObserver
-{
-    int observingID;
-};
-
 struct c_Clickable {};
 
 struct c_Selected {};
@@ -76,3 +71,5 @@ struct c_Goal
 {
     bool open;
 };
+
+struct c_Reset {};

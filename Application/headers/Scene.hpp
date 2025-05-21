@@ -26,6 +26,7 @@ public:
 	bool IsEntity(int entity);
 	void RemoveEntity(int entity);
 	void DrawScene(Renderer& renderer, Camera& camera);
+	void Reset();
 
 	//Systems
 

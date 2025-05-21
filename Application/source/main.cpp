@@ -7,7 +7,6 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "entt.hpp"
-#include "Scene.hpp"
 #include "LuaInput.hpp"
 #include "SceneManager.hpp"
 
@@ -21,7 +20,7 @@ enum class GameState
     GameOver
 };
 
-void SetUpGameScene(lua_State* L, Camera& camera, Scene &scene)
+void SetupGameScene(lua_State* L, Camera& camera, Scene &scene)
 {
     Scene::lua_openscene(L, &scene);
     scene.CreateSystem<BehaviourSystem>(L);
@@ -29,21 +28,39 @@ void SetUpGameScene(lua_State* L, Camera& camera, Scene &scene)
     scene.CreateSystem<CollisionSystem>(L, 0, 1);
     scene.CreateSystem<CollisionSystem>(L, 2, 0);
     scene.CreateSystem<ButtonSystem>(L);
+    scene.CreateSystem<GoalSystem>(L);
 
-    luaL_dofile(L, "scripts/initLevel.lua");
-    GameConsole::DumpError(L);
+    if (luaL_dofile(L, "scripts/initLevel.lua") != LUA_OK)
+    {
+        GameConsole::DumpError(L);
+    }
 }
 
-void SetUpEditingScene(lua_State* L, Camera& camera, Scene& scene)
+void SetupEditingScene(lua_State* L, Camera& camera, Scene& scene)
 {
     Scene::lua_openscene(L, &scene);
     scene.CreateSystem<CameraSystem>(&camera, 1);
     scene.CreateSystem<SelectionSystem>(L, &camera);
     scene.CreateSystem<DraggingSystem>(L, &camera);
     scene.CreateSystem<ButtonSystem>(L);
+    scene.CreateSystem<BehaviourSystem>(L);
 
-    luaL_dofile(L, "scripts/initEditorMenu.lua");
-    GameConsole::DumpError(L);
+    if (luaL_dofile(L, "scripts/initEditor.lua") != LUA_OK)
+    {
+        GameConsole::DumpError(L);
+    }
+}
+
+void SetupMenuScene(lua_State* L, Camera& camera, Scene& scene)
+{
+    Scene::lua_openscene(L, &scene);
+    scene.CreateSystem<ButtonSystem>(L);
+    scene.CreateSystem<BehaviourSystem>(L);
+
+    if (luaL_dofile(L, "scripts/initMenu.lua") != LUA_OK)
+    {
+        GameConsole::DumpError(L);
+    }
 }
 
 int main()
@@ -55,9 +72,7 @@ int main()
     lua_State* L = luaL_newstate();
 
     //Camera setup
-
     Camera camera;
-
     
     //Öppnar standardbibliotek för lua, gör så att kodsträngen går att köra
     luaL_openlibs(L);
@@ -71,16 +86,16 @@ int main()
 
     sm.AddScene(&GameScene, "game");
     sm.AddScene(&EditingScene, "editor");
-    sm.AddScene(&MenuScene, "manu");
+    sm.AddScene(&MenuScene, "menu");
 
     //Scene Setup functions
-    SetUpGameScene(L, camera, GameScene);
-    SetUpEditingScene(L, camera, EditingScene);
+    SetupGameScene(L, camera, GameScene);
+    SetupEditingScene(L, camera, EditingScene);
+    SetupMenuScene(L, camera, MenuScene);
 
     //Start game in GameScene for now
     GameState currentState = GameState::Game;
-    Scene* currentScene = &GameScene;
-    Scene::lua_openscene(L, &GameScene);
+    sm.LoadScene(L, "menu");
 
 	const int screenWidth = 800 * 2;
 	const int screenHeight = 450 * 2;
@@ -98,8 +113,6 @@ int main()
     int cameraMode = CAMERA_FIRST_PERSON;
 
     Vector3 lookDirection = { 0, 0, 1.0f };
-
-	DisableCursor();                    // Limit cursor to relative movement inside the window
 
 	SetTargetFPS(60);
 
@@ -133,54 +146,45 @@ int main()
     Texture2D panorama = LoadTexture("assets/skybox.png");
     renderer.LoadTexture("skybox_texture", panorama);
 
-
 	while (!WindowShouldClose())
 	{
         // Update
         //----------------------------------------------------------------------------------
-
         if (IsKeyPressed(KEY_TAB)) {
-            if (currentScene == &GameScene)
+            if (sm.GetCurrentScene() == &GameScene)
             {
-                currentScene = &EditingScene;
-                Scene::lua_openscene(L, &EditingScene);
+                sm.LoadScene(L, "editor");
             }  
             else
             {
-                currentScene = &GameScene;
-                Scene::lua_openscene(L, &GameScene);
+                sm.LoadScene(L, "game");
             }
-               
         }
 
-        currentScene->UpdateSystems(GetFrameTime());
-
+        sm.UpdateScene(L, GetFrameTime());
 
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
+
+        if (sm.GetCurrentScene() == &EditingScene)
+        {
+            BeginMode3D(camera);
+            DrawGrid(100, 5.0f);
+            EndMode3D();
+        }
+
+        sm.DrawScene(renderer, camera);
+
         
 
-        currentScene->DrawScene(renderer, camera);
-
-        
         // Draw info boxes
         DrawRectangle(5, 5, 310, 115, Fade(SKYBLUE, 0.5f));
         DrawRectangleLines(5, 5, 310, 115, BLUE);
 
         DrawText("Camera controls: Up, Down, Left, Right, Enter, Right-Shift", 15, 15, 10, BLACK);
         DrawText("Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
-        {
-            int collectibleCount = currentScene->GetRegistry()->view<c_Collectible>().size();
-            std::string text = std::string("Collectibles: ") + std::to_string(collectibleCount);
-            DrawText(text.c_str(), 15, 85, 10, BLACK);
-
-            if (collectibleCount <= 0)
-                DrawText("YOU WIN!", screenWidth / 2 - 200, screenHeight / 2 - 50, 100, GREEN);
-        }
-        DrawText("5. Spawn Entities", 15, 105, 10, BLACK);
 
         DrawRectangle(600, 5, 195, 100, Fade(SKYBLUE, 0.5f));
         DrawRectangleLines(600, 5, 195, 100, BLUE);

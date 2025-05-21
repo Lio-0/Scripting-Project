@@ -6,7 +6,7 @@ function orb:OnCreate()
 	local transform = {
 		position = {
 			x = 0,
-			y = 7,
+			y = 4,
 			z = 0
 		},
 

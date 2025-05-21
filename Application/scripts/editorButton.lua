@@ -1,8 +1,9 @@
-local platformButton = {}
+local editorButton = {}
 local mainColor = {a = 255, r = 255, g = 255, b = 255}
 local button = {}
 
-function platformButton:OnCreate()
+function editorButton:OnCreate()
+
 	button = {
 		textColour = {
 		a = 255,
@@ -11,24 +12,25 @@ function platformButton:OnCreate()
 		b = 0
 		},
 
-		posX = 100,
-		posY = 100,
-		width = 100,
-		height = 40,
-		textPosX = 10,
-		textPosY = 15,
-		fontSize = 10,
-		label = 'Create Platform'
+		posX = 0,
+		posY = 0,
+		width = 180,
+		height = 60,
+		textPosX = 20,
+		textPosY = 10,
+		fontSize = 40,
+		label = 'Editor'
 	}
 	
 	scene.SetComponent(self.ID, "color", mainColor)
 	scene.SetComponent(self.ID, "button", button)
 end
 
-function platformButton:OnUpdate(delta)
+function editorButton:OnUpdate(delta)
 	local color = scene.GetComponent(self.ID, "color")
 
 	local mouseX, mouseY = input.GetMousePosition()
+	local screenX, screenY = system.GetScreenDim()
 
 	if (button.posX < mouseX) and  (mouseX < button.posX + button.width) and (button.posY < mouseY) and (mouseY < button.posY + button.height) then
 		color = {
@@ -40,12 +42,15 @@ function platformButton:OnUpdate(delta)
 		color = mainColor
 	end
 
+	button.posX = screenX / 2 - 90
+	button.posY = screenY / 2 + 150
+
 	scene.SetComponent(self.ID, "color", color)
 	scene.SetComponent(self.ID, "button", button)
 end
 
-function platformButton:OnClick(delta)
-	dofile("scripts/createPlatform.lua")
+function editorButton:OnClick(delta)
+	system.LoadScene("editor")
 end
 
-return platformButton
+return editorButton

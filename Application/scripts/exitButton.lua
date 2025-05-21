@@ -1,8 +1,8 @@
-local platformButton = {}
+local orbButton = {}
 local mainColor = {a = 255, r = 255, g = 255, b = 255}
 local button = {}
 
-function platformButton:OnCreate()
+function orbButton:OnCreate()
 	button = {
 		textColour = {
 		a = 255,
@@ -11,21 +11,21 @@ function platformButton:OnCreate()
 		b = 0
 		},
 
-		posX = 100,
-		posY = 100,
+		posX = 350,
+		posY = 200,
 		width = 100,
 		height = 40,
-		textPosX = 10,
+		textPosX = 20,
 		textPosY = 15,
 		fontSize = 10,
-		label = 'Create Platform'
+		label = 'Create Orb'
 	}
 	
 	scene.SetComponent(self.ID, "color", mainColor)
 	scene.SetComponent(self.ID, "button", button)
 end
 
-function platformButton:OnUpdate(delta)
+function orbButton:OnUpdate(delta)
 	local color = scene.GetComponent(self.ID, "color")
 
 	local mouseX, mouseY = input.GetMousePosition()
@@ -44,8 +44,12 @@ function platformButton:OnUpdate(delta)
 	scene.SetComponent(self.ID, "button", button)
 end
 
-function platformButton:OnClick(delta)
-	dofile("scripts/createPlatform.lua")
+function orbButton:OnClick(delta)
+	co = coroutine.create(function ()
+           local entity = scene.CreateEntity()
+			scene.SetComponent(entity, "behaviour", "scripts/orb.lua")
+         end)
+	coroutine.resume(co)
 end
 
-return platformButton
+return orbButton

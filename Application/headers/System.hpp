@@ -428,3 +428,27 @@ public:
 	}
 
 };
+
+class GoalSystem : public System
+{
+	lua_State* L;
+
+public:
+	GoalSystem(lua_State* L) : L(L) {}
+
+	bool OnUpdate(entt::registry& registry, float delta) final
+	{
+		auto view = registry.view<c_Goal>();
+		int collectibleCount = registry.view<c_Collectible>().size();
+
+		view.each([&](c_Goal& goal) {
+
+			if (collectibleCount <= 0)
+			{
+				goal.open = true;
+			}
+			});
+
+		return false;
+	}
+};

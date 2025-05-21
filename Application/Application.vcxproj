@@ -164,20 +164,18 @@
     <ClInclude Include="headers\LuaInput.hpp" />
     <ClInclude Include="headers\Renderer.hpp" />
     <ClInclude Include="headers\Scene.hpp" />
+    <ClInclude Include="headers\SceneManager.hpp" />
     <ClInclude Include="headers\System.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameConsole.cpp" />
-    <ClCompile Include="source\LoadScenes.cpp" />
+    <ClCompile Include="source\SceneManager.cpp" />
     <ClCompile Include="source\LuaInput.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Renderer.cpp" />
     <ClCompile Include="source\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\createFilur.lua" />
-    <None Include="scripts\filur.lua" />
-    <None Include="scripts\fpCamera.lua" />
     <None Include="scripts\initLevel.lua" />
     <None Include="scripts\playerController.lua" />
     <None Include="scripts\transform.lua" />
