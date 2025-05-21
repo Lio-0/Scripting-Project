@@ -74,6 +74,10 @@ Scene* lua_GetSceneUpValue(lua_State* L)
 	return static_cast<Scene*>(lua_touserdata(L, lua_upvalueindex(1)));
 }
 
+void Scene::ClearEntities() {
+	m_registry.clear();
+}
+
 void lua_pushvector(lua_State* L, const c_Vector& vec)
 {
 	lua_newtable(L);
@@ -111,6 +115,7 @@ void lua_pushtransform(lua_State* L, const c_Transform& transform)
 	lua_pushvector(L, transform.scale);
 	lua_setfield(L, -2, "scale");
 }
+
 
 c_Vector lua_getvector(lua_State* L, int index)
 {
@@ -216,6 +221,7 @@ c_Button lua_tobutton(lua_State* L, int index)
 	return btn;
 }
 
+
 int Scene::lua_CreateEntity(lua_State* L)
 {
 	Scene* scene = lua_GetSceneUpValue(L);
@@ -230,6 +236,22 @@ int Scene::lua_SetComponent(lua_State* L)
 
 	int entity = (int)lua_tointeger(L, 1);
 	std::string type = lua_tostring(L, 2);
+
+	// Handle marker components early — no data needed
+	if (type == "clickable") {
+		scene->SetComponent<c_Clickable>(entity);
+		return 0;
+	}
+	else if (type == "selected") {
+		scene->SetComponent<c_Selected>(entity);
+		return 0;
+	}
+
+	// Now check that the value (3rd argument) exists for data components
+	if (lua_gettop(L) < 3) {
+		return luaL_error(L, "SetComponent: Missing value for component type '%s'", type.c_str());
+	}
+
 
 	if (type == "vector")
 	{
@@ -286,14 +308,6 @@ int Scene::lua_SetComponent(lua_State* L)
 	{
 		int ID = (int)lua_tointeger(L, 3);
 		scene->SetComponent<c_Collectible>(entity, ID);
-	}
-	else if (type == "clickable")
-	{
-		scene->SetComponent<c_Clickable>(entity);
-	}
-	else if (type == "selected")
-	{
-		scene->SetComponent<c_Selected>(entity);
 	}
 	else if (type == "color")
 	{

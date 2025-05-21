@@ -27,6 +27,7 @@ public:
 	void RemoveEntity(int entity);
 	void DrawScene(Renderer& renderer, Camera& camera);
 	void Reset();
+	void ClearEntities();
 
 	//Systems
 
@@ -34,6 +35,7 @@ public:
 	void CreateSystem(Args... args);
 
 	void UpdateSystems(float delta);
+
 
 	//Components
 

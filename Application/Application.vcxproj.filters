@@ -8,6 +8,7 @@
     <ClInclude Include="headers\Scene.hpp" />
     <ClInclude Include="headers\System.hpp" />
     <ClInclude Include="headers\SceneManager.hpp" />
+    <ClInclude Include="headers\SerializeHelper.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameConsole.cpp" />
