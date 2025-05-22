@@ -7,6 +7,8 @@ entity = scene.CreateEntity()
 scene.SetComponent(entity, "behaviour", "scripts/platformButton.lua")
 entity = scene.CreateEntity()
 scene.SetComponent(entity, "behaviour", "scripts/orbButton.lua")
+entity = scene.CreateEntity()
+scene.SetComponent(entity, "behaviour", "scripts/saveAndExitButton.lua")
 
 entity = scene.CreateEntity()
 local transform = {

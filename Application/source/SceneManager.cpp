@@ -1,9 +1,11 @@
 #pragma once
 #include "SceneManager.hpp"
-
+#include "SceneSerializer.hpp"
+#include "entt.hpp"
 std::unordered_map<std::string, Scene*> SceneManager::m_scenes;
 Scene* SceneManager::m_currentScene;
 bool SceneManager::m_changeScene = false;
+
 
 SceneManager::SceneManager(lua_State* L)
 {
@@ -28,6 +30,10 @@ void SceneManager::AddScene(Scene* scene, std::string name)
 
 int SceneManager::lua_LoadScene(lua_State* L)
 {	
+	if (m_currentScene == m_scenes["editor"])
+	{
+		SceneSerializer::Save(*m_currentScene->GetRegistry(), "assets/Level1.json");
+	}
 	m_currentScene = m_scenes[lua_tostring(L, 1)];
 	m_changeScene = true;
 	return 0;
@@ -40,6 +46,8 @@ void SceneManager::UpdateScene(lua_State* L, float delta)
 		Scene::lua_openscene(L, m_currentScene);
 		m_currentScene->Reset();
 		m_changeScene = false;
+		if (m_currentScene == m_scenes["game"])
+			SceneSerializer::Load(L, "assets/Level1.json");		
 	}
 	m_currentScene->UpdateSystems(delta);
 }

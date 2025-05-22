@@ -8,7 +8,7 @@
     <ClInclude Include="headers\Scene.hpp" />
     <ClInclude Include="headers\System.hpp" />
     <ClInclude Include="headers\SceneManager.hpp" />
-    <ClInclude Include="headers\SerializeHelper.hpp" />
+    <ClInclude Include="headers\SceneSerializer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\GameConsole.cpp" />
@@ -17,11 +17,13 @@
     <ClCompile Include="source\Renderer.cpp" />
     <ClCompile Include="source\Scene.cpp" />
     <ClCompile Include="source\SceneManager.cpp" />
+    <ClCompile Include="source\SceneSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\initLevel.lua" />
     <None Include="scripts\playerController.lua" />
     <None Include="scripts\transform.lua" />
     <None Include="scripts\vector.lua" />
+    <None Include="scripts\saveAndExitButton.lua" />
   </ItemGroup>
 </Project>

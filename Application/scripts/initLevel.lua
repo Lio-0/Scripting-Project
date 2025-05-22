@@ -37,22 +37,3 @@ transform.scale.x = -1
 transform.scale.y = -1
 transform.scale.z = -1
 
-scene.SetComponent(entity, "transform", transform)
-
-dofile("scripts/createPlatform.lua")
-dofile("scripts/createGoal.lua")
-
-entity = scene.CreateEntity()
-scene.SetComponent(entity, "behaviour", "scripts/orb.lua")
-entity = scene.CreateEntity()
-scene.SetComponent(entity, "behaviour", "scripts/orb.lua")
-transform.position.x = -2
-transform.position.y = 1
-transform.position.z = 1
-transform.rotation.y = 0
-transform.rotation.z = 0
-transform.rotation.x = 0
-transform.scale.x = 0.3
-transform.scale.y = 0.3
-transform.scale.z = 0.3
-scene.SetComponent(entity, "transform", transform)

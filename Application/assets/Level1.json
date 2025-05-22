@@ -1,0 +1,132 @@
+[
+    {
+        "behaviour": {
+            "script": "scripts/orb.lua"
+        },
+        "clickable": true,
+        "collectible": {
+            "id": 0
+        },
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": -3.9482662677764893,
+                "y": 0.6911762952804565,
+                "z": 0.7373180389404297
+            },
+            "rotation": {
+                "x": 2219.693359375,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 0.30000001192092896,
+                "z": 0.30000001192092896
+            }
+        },
+        "visual": {
+            "model": "orb",
+            "rendered": true,
+            "texture": "orb_texture"
+        }
+    },
+    {
+        "behaviour": {
+            "script": "scripts/goal.lua"
+        },
+        "clickable": true,
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": -6.901364326477051,
+                "y": 1.7162716388702393,
+                "z": 0.9264755249023438
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 3.0,
+                "y": 3.0,
+                "z": 3.0
+            }
+        },
+        "visual": {
+            "model": "goal_locked",
+            "rendered": true,
+            "texture": "goal_locked"
+        }
+    },
+    {
+        "clickable": true,
+        "collision": {
+            "layer": 1
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 0.05703616142272949,
+                "y": -0.48014402389526367,
+                "z": 0.6327910423278809
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 4.0,
+                "y": 0.5,
+                "z": 4.0
+            }
+        },
+        "visual": {
+            "model": "cube",
+            "rendered": true,
+            "texture": "grey_texture"
+        }
+    },
+    {
+        "transform": {
+            "position": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 1.0,
+                "z": 0.30000001192092896
+            }
+        }
+    }
+]
