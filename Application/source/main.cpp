@@ -27,18 +27,12 @@ enum class GameState
 void SetupGameScene(lua_State* L, Camera& camera, Scene &scene)
 {
     Scene::lua_openscene(L, &scene);
+    scene.CreateSystem<GoalSystem>(L);
     scene.CreateSystem<BehaviourSystem>(L);
     scene.CreateSystem<CameraSystem>(&camera, 0);
     scene.CreateSystem<CollisionSystem>(L, 0, 1);
     scene.CreateSystem<CollisionSystem>(L, 2, 0);
     scene.CreateSystem<ButtonSystem>(L);
-    scene.CreateSystem<GoalSystem>(L);
-
-    if (luaL_dofile(L, "scripts/initLevel.lua") != LUA_OK)
-    {
-        GameConsole::DumpError(L);
-    }
-    
 }
 
 void SetupEditingScene(lua_State* L, Camera& camera, Scene& scene)
@@ -120,6 +114,13 @@ int main()
     Vector3 lookDirection = { 0, 0, 1.0f };
 
 	SetTargetFPS(60);
+    Image logo = LoadImage("assets/jonas_logo.png");
+    Image c_logo = LoadImage("assets/al_logo.png");
+    Texture2D title_texture = LoadTextureFromImage(logo);
+    Texture2D logo_texture = LoadTextureFromImage(c_logo);
+
+    UnloadImage(logo);
+    UnloadImage(c_logo);
 
     //Models
     Renderer renderer;
@@ -157,6 +158,38 @@ int main()
 	{
         // Update
         //----------------------------------------------------------------------------------
+        {
+            auto view = sm.GetCurrentScene()->GetRegistry()->view<c_Selected>();
+            for (auto [entity] : view.each()) {
+                if (IsKeyPressed(KEY_O)) {
+                    luaL_dofile(L, "scripts/obstacle.lua");
+                    lua_pushvalue(L, -1);
+                    int luaTableRef = luaL_ref(L, LUA_REGISTRYINDEX);
+
+                    lua_pushinteger(L, (int)entity);
+                    lua_setfield(L, -2, "ID");
+
+                    lua_pushstring(L, "scripts/obstacle.lua");
+                    lua_setfield(L, -2, "path");
+
+                    lua_getfield(L, -1, "OnCreate");
+                    lua_pushvalue(L, -2);
+                    lua_pcall(L, 1, 0, 0);
+
+                    sm.GetCurrentScene()->SetComponent<c_Behaviour>((int)entity, "scripts/obstacle.lua", luaTableRef);
+                }
+                if (IsKeyPressed(KEY_DELETE) && IsMouseButtonUp(MOUSE_BUTTON_LEFT))
+                {
+                    sm.GetCurrentScene()->RemoveEntity((int)entity);
+                }
+            }
+        }
+
+
+        if (IsKeyPressed(KEY_L))
+        {
+            sm.GetCurrentScene()->Reset();
+        }
 
         sm.UpdateScene(L, GetFrameTime());
 
@@ -164,6 +197,12 @@ int main()
         //----------------------------------------------------------------------------------
         BeginDrawing();
         ClearBackground(RAYWHITE);
+
+        if (sm.GetCurrentScene() == &MenuScene)
+        {
+            DrawTexture(title_texture, screenWidth / 2 - title_texture.width / 2, screenHeight / 8, WHITE);
+            DrawTexture(logo_texture, screenWidth - logo_texture.width - 50, screenHeight - logo_texture.height - 50, WHITE);
+        }
 
         if (sm.GetCurrentScene() == &EditingScene)
         {
@@ -173,23 +212,6 @@ int main()
         }
 
         sm.DrawScene(renderer, camera);
-
-        
-
-        // Draw info boxes
-        DrawRectangle(5, 5, 310, 115, Fade(SKYBLUE, 0.5f));
-        DrawRectangleLines(5, 5, 310, 115, BLUE);
-
-        DrawText("Camera controls: Up, Down, Left, Right, Enter, Right-Shift", 15, 15, 10, BLACK);
-        DrawText("Move keys: W, A, S, D, Space, Left-Ctrl", 15, 30, 10, BLACK);
-
-        DrawRectangle(600, 5, 195, 100, Fade(SKYBLUE, 0.5f));
-        DrawRectangleLines(600, 5, 195, 100, BLUE);
-
-        DrawText("Camera status:", 610, 15, 10, BLACK);
-        DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", camera.position.x, camera.position.y, camera.position.z), 610, 60, 10, BLACK);
-        DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", camera.target.x, camera.target.y, camera.target.z), 610, 75, 10, BLACK);
-        DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", camera.up.x, camera.up.y, camera.up.z), 610, 90, 10, BLACK);
         EndDrawing();
 	}
 

@@ -46,8 +46,15 @@ void SceneManager::UpdateScene(lua_State* L, float delta)
 		Scene::lua_openscene(L, m_currentScene);
 		m_currentScene->Reset();
 		m_changeScene = false;
-		if (m_currentScene == m_scenes["game"])
-			SceneSerializer::Load(L, "assets/Level1.json");		
+		if (m_currentScene == m_scenes["game"]) 
+		{
+			m_currentScene->ClearEntities();
+			if (luaL_dofile(L, "scripts/initLevel.lua") != LUA_OK)
+			{
+				GameConsole::DumpError(L);
+			}
+			SceneSerializer::Load(L, "assets/Level1.json");
+		}
 	}
 	m_currentScene->UpdateSystems(delta);
 }

@@ -39,7 +39,10 @@ json serialize_color(const c_Color& c) {
 }
 
 json serialize_collectible(const c_Collectible& c) {
-    return { {"id", c.ID} };
+    return {
+        {"id", c.ID},
+        {"collected", c.collected}
+    };
 }
 
 json serialize_button(const c_Button& b) {
@@ -273,7 +276,8 @@ void SceneSerializer::Load(lua_State* L, const std::string& path) {
 
         if (entity_data.contains("collectible")) {
             lua_pushinteger(L, entity_data["collectible"]["id"]);
-            call_setcomponent("collectible", 1);
+            lua_pushboolean(L, entity_data["collectible"]["collected"]);
+            call_setcomponent("collectible", 2);
         }
 
         if (entity_data.contains("observer")) {

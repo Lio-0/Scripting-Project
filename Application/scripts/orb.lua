@@ -15,8 +15,14 @@ end
 
 function orb:OnCollision(delta, collisionX, collisionY, collisionZ)
 	if (collisionX or collisionY or collisionZ) then
-		scene.RemoveEntity(self.ID)
+		scene.SetComponent(self.ID, "collectible", 0, true)
+		scene.SetComponent(self.ID, "visual", "orb", "orb_texture", false) 
 	end
+end
+
+function orb:OnReset(delta)
+	scene.SetComponent(self.ID, "collectible", 0, false)
+	scene.SetComponent(self.ID, "visual", "orb", "orb_texture", true) 
 end
 
 return orb

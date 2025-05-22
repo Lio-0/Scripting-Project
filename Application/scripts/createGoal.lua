@@ -1,4 +1,6 @@
 local entity = scene.CreateEntity()
+scene.SetComponent(entity, "goal", false)
+scene.SetComponent(entity, "visual", "goal_locked", "goal_locked", true) 
 scene.SetComponent(entity, "behaviour", "scripts/goal.lua")
 
 local transform = {
@@ -21,8 +23,6 @@ local transform = {
 	}
 }
 
-scene.SetComponent(entity, "goal", false)
-scene.SetComponent(entity, "visual", "goal_locked", "goal_locked", true) 
 scene.SetComponent(entity, "collision", 2)
 scene.SetComponent(entity, "transform", transform)
 scene.SetComponent(entity, "vector", transform.rotation)

@@ -1,6 +1,275 @@
 [
     {
         "behaviour": {
+            "script": "scripts/orb.lua"
+        },
+        "clickable": true,
+        "collectible": {
+            "collected": false,
+            "id": 0
+        },
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": -0.7026300430297852,
+                "y": 2.46110200881958,
+                "z": 9.733683586120605
+            },
+            "rotation": {
+                "x": 5204.58056640625,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 0.30000001192092896,
+                "z": 0.30000001192092896
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "orb",
+            "rendered": true,
+            "texture": "orb_texture"
+        }
+    },
+    {
+        "behaviour": {
+            "script": "scripts/orb.lua"
+        },
+        "clickable": true,
+        "collectible": {
+            "collected": false,
+            "id": 0
+        },
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 0.11749839782714844,
+                "y": 0.7586374282836914,
+                "z": 5.280196666717529
+            },
+            "rotation": {
+                "x": 5216.25537109375,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 0.30000001192092896,
+                "z": 0.30000001192092896
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "orb",
+            "rendered": true,
+            "texture": "orb_texture"
+        }
+    },
+    {
+        "behaviour": {
+            "script": "scripts/orb.lua"
+        },
+        "clickable": true,
+        "collectible": {
+            "collected": false,
+            "id": 0
+        },
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 1.230434536933899,
+                "y": 1.448965072631836,
+                "z": 15.853760719299316
+            },
+            "rotation": {
+                "x": 5227.9248046875,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 0.30000001192092896,
+                "z": 0.30000001192092896
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "orb",
+            "rendered": true,
+            "texture": "orb_texture"
+        }
+    },
+    {
+        "behaviour": {
+            "script": "scripts/orb.lua"
+        },
+        "clickable": true,
+        "collectible": {
+            "collected": false,
+            "id": 0
+        },
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 0.708442211151123,
+                "y": 1.5521624088287354,
+                "z": 21.562480926513672
+            },
+            "rotation": {
+                "x": 5242.9453125,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 0.30000001192092896,
+                "z": 0.30000001192092896
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "orb",
+            "rendered": true,
+            "texture": "orb_texture"
+        }
+    },
+    {
+        "behaviour": {
+            "script": "scripts/orb.lua"
+        },
+        "clickable": true,
+        "collectible": {
+            "collected": false,
+            "id": 0
+        },
+        "collision": {
+            "layer": 2
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 4.874760627746582,
+                "y": 0.06526899337768555,
+                "z": 25.65376091003418
+            },
+            "rotation": {
+                "x": 5254.6103515625,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 0.30000001192092896,
+                "y": 0.30000001192092896,
+                "z": 0.30000001192092896
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "orb",
+            "rendered": true,
+            "texture": "orb_texture"
+        }
+    },
+    {
+        "clickable": true,
+        "collision": {
+            "layer": 1
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 0.15944385528564453,
+                "y": -0.22747421264648438,
+                "z": 5.398008346557617
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 4.0,
+                "y": 0.5,
+                "z": 4.0
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "cube",
+            "rendered": true,
+            "texture": "rock_texture"
+        }
+    },
+    {
+        "behaviour": {
             "script": "scripts/goal.lua"
         },
         "clickable": true,
@@ -18,9 +287,9 @@
         },
         "transform": {
             "position": {
-                "x": -36.40723419189453,
-                "y": -5.863844394683838,
-                "z": 22.509689331054688
+                "x": -5.962809085845947,
+                "y": -0.6536588668823242,
+                "z": 33.09676742553711
             },
             "rotation": {
                 "x": 0.0,
@@ -30,7 +299,7 @@
             "scale": {
                 "x": 3.0,
                 "y": 3.0,
-                "z": 3.0
+                "z": 3.4330456256866455
             }
         },
         "vector": {
@@ -45,21 +314,24 @@
         }
     },
     {
+        "behaviour": {
+            "script": "scripts/obstacle.lua"
+        },
         "clickable": true,
         "collision": {
-            "layer": 1
+            "layer": 2
         },
         "color": {
             "a": 255,
-            "b": 255,
-            "g": 255,
+            "b": 0,
+            "g": 0,
             "r": 255
         },
         "transform": {
             "position": {
-                "x": -28.386842727661133,
-                "y": -5.219028472900391,
-                "z": 23.286598205566406
+                "x": 1.074937343597412,
+                "y": 0.24863243103027344,
+                "z": 21.397998809814453
             },
             "rotation": {
                 "x": 0.0,
@@ -68,9 +340,14 @@
             },
             "scale": {
                 "x": 4.0,
-                "y": 0.5,
-                "z": 4.0
+                "y": 0.8166730403900146,
+                "z": 0.33279845118522644
             }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
         },
         "visual": {
             "model": "cube",
@@ -91,9 +368,9 @@
         },
         "transform": {
             "position": {
-                "x": -19.427181243896484,
-                "y": -6.081871032714844,
-                "z": 23.909841537475586
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
             "rotation": {
                 "x": 0.0,
@@ -106,39 +383,10 @@
                 "z": 4.0
             }
         },
-        "visual": {
-            "model": "cube",
-            "rendered": true,
-            "texture": "rock_texture"
-        }
-    },
-    {
-        "clickable": true,
-        "collision": {
-            "layer": 1
-        },
-        "color": {
-            "a": 255,
-            "b": 255,
-            "g": 255,
-            "r": 255
-        },
-        "transform": {
-            "position": {
-                "x": -11.135825157165527,
-                "y": -7.206201553344727,
-                "z": 23.51839828491211
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 4.0,
-                "y": 0.5,
-                "z": 4.0
-            }
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
         },
         "visual": {
             "model": "cube",
@@ -148,189 +396,39 @@
     },
     {
         "behaviour": {
-            "script": "scripts/orb.lua"
+            "script": "scripts/obstacle.lua"
         },
         "clickable": true,
-        "collectible": {
-            "id": 0
-        },
         "collision": {
             "layer": 2
         },
         "color": {
             "a": 255,
-            "b": 255,
-            "g": 255,
+            "b": 0,
+            "g": 0,
             "r": 255
         },
         "transform": {
             "position": {
-                "x": 0.0,
-                "y": 4.0,
-                "z": 0.0
+                "x": -0.6727428436279297,
+                "y": 0.4258131980895996,
+                "z": 9.643898963928223
             },
             "rotation": {
-                "x": 12420.7958984375,
+                "x": 0.0,
                 "y": 0.0,
                 "z": 0.0
             },
             "scale": {
-                "x": 0.30000001192092896,
-                "y": 0.30000001192092896,
-                "z": 0.30000001192092896
+                "x": 4.699792385101318,
+                "y": 1.7666816711425781,
+                "z": 0.6498933434486389
             }
         },
         "vector": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
-        },
-        "visual": {
-            "model": "orb",
-            "rendered": true,
-            "texture": "orb_texture"
-        }
-    },
-    {
-        "behaviour": {
-            "script": "scripts/orb.lua"
-        },
-        "clickable": true,
-        "collectible": {
-            "id": 0
-        },
-        "collision": {
-            "layer": 2
-        },
-        "color": {
-            "a": 255,
-            "b": 255,
-            "g": 255,
-            "r": 255
-        },
-        "transform": {
-            "position": {
-                "x": -10.965803146362305,
-                "y": -7.284008979797363,
-                "z": 16.373931884765625
-            },
-            "rotation": {
-                "x": 14563.7255859375,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 0.30000001192092896,
-                "y": 0.30000001192092896,
-                "z": 0.30000001192092896
-            }
-        },
-        "vector": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "visual": {
-            "model": "orb",
-            "rendered": true,
-            "texture": "orb_texture"
-        }
-    },
-    {
-        "clickable": true,
-        "collision": {
-            "layer": 1
-        },
-        "color": {
-            "a": 255,
-            "b": 255,
-            "g": 255,
-            "r": 255
-        },
-        "transform": {
-            "position": {
-                "x": -11.07807445526123,
-                "y": -8.165398597717285,
-                "z": 16.230934143066406
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 4.0,
-                "y": 0.5,
-                "z": 4.0
-            }
-        },
-        "visual": {
-            "model": "cube",
-            "rendered": true,
-            "texture": "rock_texture"
-        }
-    },
-    {
-        "clickable": true,
-        "collision": {
-            "layer": 1
-        },
-        "color": {
-            "a": 255,
-            "b": 255,
-            "g": 255,
-            "r": 255
-        },
-        "transform": {
-            "position": {
-                "x": -13.801742553710938,
-                "y": 2.898923397064209,
-                "z": 7.249892234802246
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 4.0,
-                "y": 0.5,
-                "z": 4.0
-            }
-        },
-        "visual": {
-            "model": "cube",
-            "rendered": true,
-            "texture": "rock_texture"
-        }
-    },
-    {
-        "clickable": true,
-        "collision": {
-            "layer": 1
-        },
-        "color": {
-            "a": 255,
-            "b": 255,
-            "g": 255,
-            "r": 255
-        },
-        "transform": {
-            "position": {
-                "x": -14.050403594970703,
-                "y": 1.1604485511779785,
-                "z": -0.17928504943847656
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 4.0,
-                "y": 0.5,
-                "z": 4.0
-            }
         },
         "visual": {
             "model": "cube",
@@ -340,36 +438,33 @@
     },
     {
         "behaviour": {
-            "script": "scripts/orb.lua"
+            "script": "scripts/obstacle.lua"
         },
         "clickable": true,
-        "collectible": {
-            "id": 0
-        },
         "collision": {
             "layer": 2
         },
         "color": {
             "a": 255,
-            "b": 255,
-            "g": 255,
+            "b": 0,
+            "g": 0,
             "r": 255
         },
         "transform": {
             "position": {
-                "x": -6.216315746307373,
-                "y": 0.6401615142822266,
-                "z": -0.024849288165569305
+                "x": 2.796398162841797,
+                "y": 1.2833542823791504,
+                "z": 15.689494132995605
             },
             "rotation": {
-                "x": 18532.3515625,
+                "x": 0.0,
                 "y": 0.0,
                 "z": 0.0
             },
             "scale": {
-                "x": 0.30000001192092896,
-                "y": 0.30000001192092896,
-                "z": 0.30000001192092896
+                "x": 0.9154962301254272,
+                "y": 3.5510714054107666,
+                "z": 5.251452445983887
             }
         },
         "vector": {
@@ -378,27 +473,30 @@
             "z": 0.0
         },
         "visual": {
-            "model": "orb",
+            "model": "cube",
             "rendered": true,
-            "texture": "orb_texture"
+            "texture": "rock_texture"
         }
     },
     {
+        "behaviour": {
+            "script": "scripts/obstacle.lua"
+        },
         "clickable": true,
         "collision": {
-            "layer": 1
+            "layer": 2
         },
         "color": {
             "a": 255,
-            "b": 255,
-            "g": 255,
+            "b": 0,
+            "g": 0,
             "r": 255
         },
         "transform": {
             "position": {
-                "x": -7.454141616821289,
-                "y": -0.31786155700683594,
-                "z": -0.021366894245147705
+                "x": -0.7557544708251953,
+                "y": 0.9804425239562988,
+                "z": 15.720231056213379
             },
             "rotation": {
                 "x": 0.0,
@@ -406,10 +504,15 @@
                 "z": 0.0
             },
             "scale": {
-                "x": 4.0,
-                "y": 0.5,
-                "z": 4.0
+                "x": 1.21536386013031,
+                "y": 3.000415086746216,
+                "z": 5.383724689483643
             }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
         },
         "visual": {
             "model": "cube",
@@ -430,9 +533,9 @@
         },
         "transform": {
             "position": {
-                "x": -0.01278144121170044,
-                "y": -0.4744420051574707,
-                "z": -0.16701269149780273
+                "x": -0.5484285354614258,
+                "y": 0.2566351890563965,
+                "z": 9.691835403442383
             },
             "rotation": {
                 "x": 0.0,
@@ -444,6 +547,128 @@
                 "y": 0.5,
                 "z": 4.0
             }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "cube",
+            "rendered": true,
+            "texture": "rock_texture"
+        }
+    },
+    {
+        "clickable": true,
+        "collision": {
+            "layer": 1
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 0.9574689865112305,
+                "y": -0.09612131118774414,
+                "z": 21.809518814086914
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 4.0,
+                "y": 0.5,
+                "z": 4.0
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "cube",
+            "rendered": true,
+            "texture": "rock_texture"
+        }
+    },
+    {
+        "clickable": true,
+        "collision": {
+            "layer": 1
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 1.9280424118041992,
+                "y": -0.05922698974609375,
+                "z": 28.621387481689453
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 4.0,
+                "y": 0.5,
+                "z": 4.0
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "visual": {
+            "model": "cube",
+            "rendered": true,
+            "texture": "rock_texture"
+        }
+    },
+    {
+        "clickable": true,
+        "collision": {
+            "layer": 1
+        },
+        "color": {
+            "a": 255,
+            "b": 255,
+            "g": 255,
+            "r": 255
+        },
+        "transform": {
+            "position": {
+                "x": 0.82904052734375,
+                "y": -0.13163280487060547,
+                "z": 15.717395782470703
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 4.0,
+                "y": 0.5,
+                "z": 4.0
+            }
+        },
+        "vector": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
         },
         "visual": {
             "model": "cube",

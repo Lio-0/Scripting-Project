@@ -48,4 +48,7 @@ function platformButton:OnClick(delta)
 	dofile("scripts/createPlatform.lua")
 end
 
+function platformButton:OnReset(delta)
+end
+
 return platformButton

@@ -75,7 +75,12 @@ Scene* lua_GetSceneUpValue(lua_State* L)
 }
 
 void Scene::ClearEntities() {
-	m_registry.clear();
+	auto view = m_registry.view<entt::entity>();
+
+	for (auto [entity] : view.each())
+	{
+		m_registry.destroy(entity);
+	}
 }
 
 void lua_pushvector(lua_State* L, const c_Vector& vec)
@@ -307,7 +312,8 @@ int Scene::lua_SetComponent(lua_State* L)
 	else if (type == "collectible")
 	{
 		int ID = (int)lua_tointeger(L, 3);
-		scene->SetComponent<c_Collectible>(entity, ID);
+		bool collected = lua_toboolean(L, 4);
+		scene->SetComponent<c_Collectible>(entity, ID, collected);
 	}
 	else if (type == "color")
 	{
@@ -332,10 +338,6 @@ int Scene::lua_SetComponent(lua_State* L)
 	{
 		bool open = lua_toboolean(L, 3);
 		scene->SetComponent<c_Goal>(entity, open);
-	}
-	else if (type == "reset")
-	{
-		scene->SetComponent<c_Reset>(entity);
 	}
 
 	return 0;
@@ -407,10 +409,6 @@ int Scene::lua_HasComponent(lua_State* L)
 	else if (type == "goal")
 	{
 		hasComponent = scene->HasComponents<c_Goal>(entity);
-	}
-	else if (type == "reset")
-	{
-		hasComponent = scene->HasComponents<c_Reset>(entity);
 	}
 
 	lua_pushboolean(L, hasComponent);
@@ -619,18 +617,18 @@ void Scene::DrawScene(Renderer& renderer, Camera& camera)
 
 void Scene::Reset()
 {
-	auto view = m_registry.view<c_Reset, c_Behaviour>();
+	auto view = m_registry.view<c_Behaviour>();
 
 	view.each([&](c_Behaviour& script) {
 			lua_rawgeti(m_luaState, LUA_REGISTRYINDEX, script.LuaTableRef);
 			lua_getfield(m_luaState, -1, "OnReset");
 			lua_pushvalue(m_luaState, -2);
+			lua_pushnumber(m_luaState, GetFrameTime());
 
-			if (lua_pcall(m_luaState, 1, 0, 0) != LUA_OK)
+			if (lua_pcall(m_luaState, 2, 0, 0) != LUA_OK)
 			{
 				GameConsole::DumpError(m_luaState);
 			}
-
 			lua_pop(m_luaState, 1);
 		});
 }

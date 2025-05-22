@@ -53,4 +53,7 @@ function editorButton:OnClick(delta)
 	system.LoadScene("editor")
 end
 
+function editorButton:OnReset(delta)
+end
+
 return editorButton

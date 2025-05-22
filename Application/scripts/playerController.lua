@@ -24,9 +24,9 @@ function playerController:OnCreate()
 		},
 
 		scale = {
-			x = 0.3,
+			x = 0.5,
 			y = 2,
-			z = 0.3
+			z = 0.5
 		}
 	}
 
@@ -47,7 +47,6 @@ function playerController:OnCreate()
 	transform.position.y = 0.9 --Camera height
 	transform.rotation.z = 1 --Camera look direction
 	scene.SetComponent(self.ID, "camera", 0, transform.position, transform.rotation)
-	scene.SetComponent(self.ID, "reset")
 end
 
 function playerController:OnUpdate(delta)
@@ -148,13 +147,6 @@ function playerController:OnUpdate(delta)
 		colZ = false
 	end
 
-	--Current collision calculation
-	if transform.position.y < -20 then
-		transform.position.x = 0
-		transform.position.y = 2
-		transform.position.z = 0
-	end
-
 	velocity.y = velocity.y - 10 * delta
 
 	if velocity.y < -10 then
@@ -170,6 +162,11 @@ function playerController:OnUpdate(delta)
 	scene.SetComponent(self.ID, "transform", transform)
 	scene.SetComponent(self.ID, "vector", velocity)
 	scene.SetComponent(self.ID, "camera", camera.ID, camera.offset, camera.target)
+
+	--Current collision calculation
+	if transform.position.y < -10 then
+		system.ResetScene()
+	end
 end
 
 
@@ -191,7 +188,11 @@ function playerController:OnCollision(delta, collisionX, collisionY, collisionZ)
 	scene.SetComponent(self.ID, "vector", v)
 end
 
-function playerController:OnReset()
+function playerController:OnReset(delta)
+
+	local transform = scene.GetComponent(self.ID, "transform")
+	local velocity = scene.GetComponent(self.ID, "vector")
+
 	local transform = {
 		position = {
 			x = 0,

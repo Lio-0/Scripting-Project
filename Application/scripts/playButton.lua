@@ -51,7 +51,9 @@ end
 function playButton:OnClick(delta)
 	input.DisableCursor()
 	system.LoadScene("game")
-	system.ResetScene()
+end
+
+function playButton:OnReset(delta)
 end
 
 return playButton

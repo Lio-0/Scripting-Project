@@ -51,4 +51,7 @@ function saveAndExitButton:OnClick(delta)
 	system.ResetScene()
 end
 
+function saveAndExitButton:OnReset(delta)
+end
+
 return saveAndExitButton

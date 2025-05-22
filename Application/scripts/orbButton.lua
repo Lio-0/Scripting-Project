@@ -46,10 +46,12 @@ end
 
 function orbButton:OnClick(delta)
 	co = coroutine.create(function ()
-           local entity = scene.CreateEntity()
-			scene.SetComponent(entity, "behaviour", "scripts/createOrb.lua")
+           dofile("scripts/createOrb.lua")
          end)
 	coroutine.resume(co)
+end
+
+function orbButton:OnReset(delta)
 end
 
 return orbButton

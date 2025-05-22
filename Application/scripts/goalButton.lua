@@ -51,4 +51,7 @@ function goalButton:OnClick(delta)
 	coroutine.resume(co)
 end
 
+function goalButton:OnReset(delta)
+end
+
 return goalButton

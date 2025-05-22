@@ -289,7 +289,7 @@ class DraggingSystem : public System
 	const float m_modeSwitchCooldown = 0.2f;
 
 public:
-	DraggingSystem(lua_State*, Camera* camera) : m_camera(camera) {}
+	DraggingSystem(lua_State* L, Camera* camera) : m_camera(camera) {}
 
 	bool OnUpdate(entt::registry& registry, float delta) override
 	{
@@ -340,6 +340,17 @@ public:
 				color.g = 255;
 				color.b = 255;
 			}
+			if (m_draggedEntity != entt::null && registry.all_of<c_Color, c_Behaviour>(m_draggedEntity)) {
+				auto& color = registry.get<c_Color>(m_draggedEntity);
+				auto& b = registry.get<c_Behaviour>(m_draggedEntity);
+
+				if (b.ScriptPath == "scripts/obstacle.lua")
+				{
+					color.r = 255;
+					color.g = 0;
+					color.b = 0;
+				}
+			}
 			m_draggedEntity = entt::null;
 		}
 
@@ -389,8 +400,6 @@ public:
 				case TransformMode::ScaleZ:   transform.scale.z += step; break;
 				}
 			}
-
-
 		};
 		return false;
 	}
@@ -439,16 +448,33 @@ public:
 
 	bool OnUpdate(entt::registry& registry, float delta) final
 	{
-		auto view = registry.view<c_Goal>();
-		int collectibleCount = registry.view<c_Collectible>().size();
+		auto collectibles = registry.view<c_Collectible>();
 
-		view.each([&](c_Goal& goal) {
+		int collectibleCount = 0;
 
-			if (collectibleCount <= 0)
+		collectibles.each([&](c_Collectible c) 
 			{
-				goal.open = true;
-			}
+			if (!c.collected)
+				collectibleCount++;
 			});
+
+		if (collectibleCount <= 0)
+		{
+			auto view = registry.view<c_Goal>();
+
+			view.each([&](c_Goal& goal) {
+				goal.open = true;
+				});
+		}
+		else
+		{
+			auto view = registry.view<c_Goal>();
+
+			view.each([&](c_Goal& goal) {
+				goal.open = false;
+				});
+		}
+
 
 		return false;
 	}

@@ -52,4 +52,7 @@ function orbButton:OnClick(delta)
 	coroutine.resume(co)
 end
 
+function orbButton:OnReset(delta)
+end
+
 return orbButton

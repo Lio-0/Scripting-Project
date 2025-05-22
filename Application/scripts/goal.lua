@@ -7,6 +7,7 @@ function wait(t)
 end
 
 function goal:OnCreate()
+    locked = true
 end
 
 function goal:OnUpdate(delta)
@@ -18,15 +19,20 @@ function goal:OnUpdate(delta)
 end
 
 function goal:OnCollision(delta, collisionX, collisionY, collisionZ)
-    print("Hello")
 	if ((collisionX or collisionY or collisionZ) and not locked) then
         co = coroutine.create(function ()
-			wait(2)
+			wait(1)
 			system.LoadScene("menu")
 			input.EnableCursor()
             end)
 	    coroutine.resume(co)
     end
+end
+
+function goal:OnReset(delta)
+    scene.SetComponent(self.ID, "goal", false)
+    scene.SetComponent(self.ID, "visual", "goal_locked", "goal_locked", true) 
+    locked = true
 end
 
 return goal

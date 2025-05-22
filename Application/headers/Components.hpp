@@ -42,6 +42,7 @@ struct c_Visual
 struct c_Collectible
 {
     int ID;
+    bool collected;
 };
 
 struct c_Clickable {};
@@ -71,5 +72,3 @@ struct c_Goal
 {
     bool open;
 };
-
-struct c_Reset {};
