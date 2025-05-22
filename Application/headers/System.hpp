@@ -138,7 +138,8 @@ public:
 					bx.min.x += aVector.x * delta;
 					bx.max.x += aVector.x * delta;
 
-					by.min.y += aVector.y * delta; 
+					by.min.y += aVector.y * delta;
+					by.max.y += aVector.y * delta;
 
 					bz.min.z += aVector.z * delta;
 					bz.max.z += aVector.z * delta;

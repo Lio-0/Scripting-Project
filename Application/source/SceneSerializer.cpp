@@ -58,10 +58,6 @@ json serialize_goal(const c_Goal& g) {
     return { {"open", g.open} };
 }
 
-json serialize_reset(const c_Reset&) {
-    return true;
-}
-
 
 void SceneSerializer::Save(entt::registry& registry, const std::string& path) {
     json scene_json = json::array();
@@ -316,11 +312,6 @@ void SceneSerializer::Load(lua_State* L, const std::string& path) {
             lua_pushboolean(L, open);
             call_setcomponent("goal", 1);
         }
-
-        if (entity_data.contains("reset")) {
-            call_setcomponent("reset", 0); // No arguments, just presence
-        }
-
 
     }
 }
