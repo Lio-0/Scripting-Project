@@ -102,10 +102,6 @@ json serialize_collectible(const c_Collectible& c) {
     return { {"id", c.ID} };
 }
 
-json serialize_observer(const c_CollectibleObserver& o) {
-    return { {"observing_id", o.observingID} };
-}
-
 json serialize_button(const c_Button& b) {
     return {
         {"label", b.label},
@@ -148,9 +144,6 @@ void SaveScene(entt::registry& registry, const std::string& path) {
         }
         if (registry.any_of<c_Collectible>(entity)) {
             entity_json["collectible"] = serialize_collectible(registry.get<c_Collectible>(entity));
-        }
-        if (registry.any_of<c_CollectibleObserver>(entity)) {
-            entity_json["observer"] = serialize_observer(registry.get<c_CollectibleObserver>(entity));
         }
         if (registry.any_of<c_Button>(entity)) {
             entity_json["button"] = serialize_button(registry.get<c_Button>(entity));
