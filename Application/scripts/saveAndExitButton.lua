@@ -11,13 +11,13 @@ function saveAndExitButton:OnCreate()
 		b = 0
 		},
 
-		posX = 0,
-		posY = 0,
-		width = 180,
-		height = 60,
-		textPosX = 40,
-		textPosY = 10,
-		fontSize = 40,
+		posX = 550,
+		posY = 100,
+		width = 100,
+		height = 40,
+		textPosX = 10,
+		textPosY = 15,
+		fontSize = 10,
 		label = 'Save & Exit'
 	}
 	
@@ -41,8 +41,6 @@ function saveAndExitButton:OnUpdate(delta)
 		color = mainColor
 	end
 
-	button.posX = screenX / 2 - 80
-	button.posY = screenY / 2 + 60
 
 	scene.SetComponent(self.ID, "button", button)
 	scene.SetComponent(self.ID, "color", color)

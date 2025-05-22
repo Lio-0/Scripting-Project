@@ -46,8 +46,7 @@ end
 
 function goalButton:OnClick(delta)
 	co = coroutine.create(function ()
-		local entity = scene.CreateEntity()
-		scene.SetComponent(entity, "behaviour", "scripts/goal.lua")
+		dofile("scripts/createGoal.lua")
          end)
 	coroutine.resume(co)
 end

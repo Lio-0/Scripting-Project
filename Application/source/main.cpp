@@ -150,6 +150,8 @@ int main()
     renderer.LoadTexture("goal_open", goalOpenTexture);
     Texture2D panorama = LoadTexture("assets/skybox.png");
     renderer.LoadTexture("skybox_texture", panorama);
+    Texture2D rockTexture = LoadTexture("assets/rock.png");
+    renderer.LoadTexture("rock_texture", rockTexture);
 
 	while (!WindowShouldClose())
 	{

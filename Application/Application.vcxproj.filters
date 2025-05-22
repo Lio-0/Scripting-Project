@@ -25,5 +25,6 @@
     <None Include="scripts\transform.lua" />
     <None Include="scripts\vector.lua" />
     <None Include="scripts\saveAndExitButton.lua" />
+    <None Include="scripts\createOrb.lua" />
   </ItemGroup>
 </Project>

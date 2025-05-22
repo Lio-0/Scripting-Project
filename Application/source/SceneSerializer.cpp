@@ -54,6 +54,15 @@ json serialize_button(const c_Button& b) {
     };
 }
 
+json serialize_goal(const c_Goal& g) {
+    return { {"open", g.open} };
+}
+
+json serialize_reset(const c_Reset&) {
+    return true;
+}
+
+
 void SceneSerializer::Save(entt::registry& registry, const std::string& path) {
     json scene_json = json::array();
 
@@ -63,6 +72,9 @@ void SceneSerializer::Save(entt::registry& registry, const std::string& path) {
 
         entity_json["transform"] = serialize_transform(registry.get<c_Transform>(entity));
 
+        if (registry.any_of<c_Vector>(entity)) {
+            entity_json["vector"] = serialize_vector(registry.get<c_Vector>(entity));
+        }
         if (registry.any_of<c_Visual>(entity)) {
             entity_json["visual"] = serialize_visual(registry.get<c_Visual>(entity));
         }
@@ -86,6 +98,9 @@ void SceneSerializer::Save(entt::registry& registry, const std::string& path) {
         }
         if (registry.any_of<c_Button>(entity)) {
             entity_json["button"] = serialize_button(registry.get<c_Button>(entity));
+        }
+        if (registry.any_of<c_Goal>(entity)) {
+            entity_json["goal"] = serialize_goal(registry.get<c_Goal>(entity));
         }
 
         scene_json.push_back(entity_json);
@@ -181,7 +196,16 @@ void SceneSerializer::Load(lua_State* L, const std::string& path) {
 
             // Pop the component data arguments
             lua_settop(L, top_before_args);
-            };
+        };
+
+        if (entity_data.contains("vector")) {
+            const auto& v = entity_data["vector"];
+            lua_newtable(L);
+            lua_pushstring(L, "x"); lua_pushnumber(L, v["x"]); lua_settable(L, -3);
+            lua_pushstring(L, "y"); lua_pushnumber(L, v["y"]); lua_settable(L, -3);
+            lua_pushstring(L, "z"); lua_pushnumber(L, v["z"]); lua_settable(L, -3);
+            call_setcomponent("vector", 1);
+        }
 
         if (entity_data.contains("transform")) {
             const auto& t = entity_data["transform"];
@@ -286,6 +310,18 @@ void SceneSerializer::Load(lua_State* L, const std::string& path) {
 
             call_setcomponent("button", 1);
         }
+
+        if (entity_data.contains("goal")) {
+            bool open = entity_data["goal"]["open"];
+            lua_pushboolean(L, open);
+            call_setcomponent("goal", 1);
+        }
+
+        if (entity_data.contains("reset")) {
+            call_setcomponent("reset", 0); // No arguments, just presence
+        }
+
+
     }
 }
 

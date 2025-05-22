@@ -178,6 +178,7 @@
     <ClCompile Include="source\SceneSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="scripts\createOrb.lua" />
     <None Include="scripts\initLevel.lua" />
     <None Include="scripts\playerController.lua" />
     <None Include="scripts\saveAndExitButton.lua" />
