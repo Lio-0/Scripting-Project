@@ -5,7 +5,9 @@
 std::unordered_map<std::string, Scene*> SceneManager::m_scenes;
 Scene* SceneManager::m_currentScene;
 bool SceneManager::m_changeScene = false;
-
+float SceneManager::m_winTimer = 1;
+float SceneManager::m_loseTimer = 1;
+PlayerState SceneManager::m_playerState = Alive;
 
 SceneManager::SceneManager(lua_State* L)
 {
@@ -15,6 +17,9 @@ SceneManager::SceneManager(lua_State* L)
 		{"LoadScene", lua_LoadScene},
 		{"GetScreenDim", lua_GetScreenDim},
 		{"ResetScene", lua_ResetScene},
+		{"Win", lua_Win},
+		{"Lose", lua_Lose},
+		{"PlayerState", lua_GetPState},
 		{NULL, NULL}
 	};
 
@@ -86,4 +91,44 @@ int SceneManager::lua_ResetScene(lua_State* L)
 {
 	m_currentScene->Reset();
 	return 0;
+}
+
+int SceneManager::lua_Win(lua_State* L)
+{
+	m_winTimer = 0;
+	m_playerState = Winning;
+
+	return 0;
+}
+
+int SceneManager::lua_Lose(lua_State* L)
+{
+	m_loseTimer = 0;
+	m_playerState = Dead;
+
+	return 0;
+}
+
+int SceneManager::lua_GetPState(lua_State* L)
+{
+	lua_pushinteger(L, m_playerState);
+	return 1;
+}
+
+void SceneManager::UpdateTimers(float delta)
+{
+	if (m_winTimer < 1)
+	{
+		m_winTimer += delta;
+		DrawText("YOU WIN!", GetScreenWidth() / 2 - 250, GetScreenHeight() / 2, 100, GREEN);
+	}
+	else if (m_loseTimer < 1)
+	{
+		m_loseTimer += delta;
+		DrawText("YOU LOSE!", GetScreenWidth() / 2 - 275, GetScreenHeight() / 2, 100, RED);
+	}
+	else
+	{
+		m_playerState = Alive;
+	}
 }

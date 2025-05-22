@@ -1,9 +1,14 @@
 local playerController = {}
-
 local vector = require("vector")
 local grounded
 local colX, colY, colZ = false, false, false
 local lastPos
+local timer = 0
+
+function wait(t)
+ 	local start = os.time()
+ 	repeat until os.time() > start + t
+end
 
 local function bton(value)
 	return value == true and 1 or value == false and 0
@@ -72,45 +77,47 @@ function playerController:OnUpdate(delta)
 
 	--Controls---------------------------------------------------------------------------------------------------------------
 
-	-- W = 87
-	if input.IsKeyDown(87) then 
-		velocity.x = velocity.x + delta * viewDirNoY.x * (30 + 50 * bton(input.IsKeyDown(340)))
-		velocity.z = velocity.z + delta * viewDirNoY.z * (30 + 50 * bton(input.IsKeyDown(340)))
-	end
-
-	-- S = 83
-	if input.IsKeyDown(83) then 
-		velocity.x = velocity.x - delta * viewDirNoY.x * (30 + 50 * bton(input.IsKeyDown(340)))
-		velocity.z = velocity.z - delta * viewDirNoY.z * (30 + 50 * bton(input.IsKeyDown(340)))
-	end
-
-	-- A = 68
-	if input.IsKeyDown(68) then 
-		velocity.x = velocity.x - delta * viewDirNoY.z * math.sin(math.rad(90)) * (30 + 50 * bton(input.IsKeyDown(340)))
-		velocity.z = velocity.z - delta * viewDirNoY.x * (-math.sin(math.rad(90))) * (30 + 50 * bton(input.IsKeyDown(340)))
-	end
-
-	-- D = 65
-	if input.IsKeyDown(65) then
-		velocity.x = velocity.x + delta * viewDirNoY.z * math.sin(math.rad(90)) * (30 + 50 * bton(input.IsKeyDown(340)))
-		velocity.z = velocity.z + delta * viewDirNoY.x * (-math.sin(math.rad(90))) * (30 + 50 * bton(input.IsKeyDown(340)))
-	end
-
-	-- Space = 32
-	if (input.IsKeyDown(32) and grounded) then
-
-		--Initial launch speed for better gameplay feel
-		if input.IsKeyPressed(32) or velocity.y < 0 then
-			velocity.y = 0.3
+	if (system.PlayerState() == 0) then
+		-- W = 87
+		if input.IsKeyDown(87) then 
+			velocity.x = velocity.x + delta * viewDirNoY.x * (30 + 50 * bton(input.IsKeyDown(340)))
+			velocity.z = velocity.z + delta * viewDirNoY.z * (30 + 50 * bton(input.IsKeyDown(340)))
 		end
 
-		--Accelerate upwards as long as player is holding space
-		velocity.y = velocity.y + 60 * delta
+		-- S = 83
+		if input.IsKeyDown(83) then 
+			velocity.x = velocity.x - delta * viewDirNoY.x * (30 + 50 * bton(input.IsKeyDown(340)))
+			velocity.z = velocity.z - delta * viewDirNoY.z * (30 + 50 * bton(input.IsKeyDown(340)))
+		end
 
-		--Stop when upwards velocity limit is reached
-		if velocity.y > 6 then
-			velocity.y = 6
-			grounded = false
+		-- A = 68
+		if input.IsKeyDown(68) then 
+			velocity.x = velocity.x - delta * viewDirNoY.z * math.sin(math.rad(90)) * (30 + 50 * bton(input.IsKeyDown(340)))
+			velocity.z = velocity.z - delta * viewDirNoY.x * (-math.sin(math.rad(90))) * (30 + 50 * bton(input.IsKeyDown(340)))
+		end
+
+		-- D = 65
+		if input.IsKeyDown(65) then
+			velocity.x = velocity.x + delta * viewDirNoY.z * math.sin(math.rad(90)) * (30 + 50 * bton(input.IsKeyDown(340)))
+			velocity.z = velocity.z + delta * viewDirNoY.x * (-math.sin(math.rad(90))) * (30 + 50 * bton(input.IsKeyDown(340)))
+		end
+
+		-- Space = 32
+		if (input.IsKeyDown(32) and grounded) then
+
+			--Initial launch speed for better gameplay feel
+			if input.IsKeyPressed(32) or velocity.y < 0 then
+				velocity.y = 0.3
+			end
+
+			--Accelerate upwards as long as player is holding space
+			velocity.y = velocity.y + 60 * delta
+
+			--Stop when upwards velocity limit is reached
+			if velocity.y > 6 then
+				velocity.y = 6
+				grounded = false
+			end
 		end
 	end
 
@@ -125,6 +132,7 @@ function playerController:OnUpdate(delta)
 	transform.position.x = transform.position.x + velocity.x * delta
 	transform.position.y = transform.position.y + velocity.y * delta
 	transform.position.z = transform.position.z + velocity.z * delta
+	
 
 	if (velocity.y < 0) then
 		grounded = false
@@ -147,7 +155,13 @@ function playerController:OnUpdate(delta)
 		colZ = false
 	end
 
-	velocity.y = velocity.y - 10 * delta
+	if (system.PlayerState() ~= 2) then
+		velocity.y = velocity.y - 10 * delta
+	else
+		velocity.y = 0
+		velocity.x = velocity.x + 10
+		velocity.z = velocity.z + 10
+	end
 
 	if velocity.y < -10 then
 		velocity.y = -10
@@ -157,6 +171,7 @@ function playerController:OnUpdate(delta)
 	camera.target.x = transform.position.x + viewDirection.x + camera.offset.x
 	camera.target.y = transform.position.y + viewDirection.y + camera.offset.y
 	camera.target.z = transform.position.z + viewDirection.z + camera.offset.z
+	
 
 	--Save data to components
 	scene.SetComponent(self.ID, "transform", transform)
@@ -164,8 +179,19 @@ function playerController:OnUpdate(delta)
 	scene.SetComponent(self.ID, "camera", camera.ID, camera.offset, camera.target)
 
 	--Current collision calculation
-	if transform.position.y < -10 then
-		system.ResetScene()
+	if (transform.position.y < -10) and (system.PlayerState() == 0) then
+		timer = 0.0
+		system.Lose()
+	end
+
+	if system.PlayerState() == 1 then
+		timer = timer + delta
+
+		if (timer > 1.0) then
+			system.ResetScene()
+		end
+	else 
+		timer = 0.0
 	end
 end
 

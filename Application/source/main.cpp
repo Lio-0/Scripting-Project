@@ -212,6 +212,9 @@ int main()
         }
 
         sm.DrawScene(renderer, camera);
+
+        sm.UpdateTimers(GetFrameTime());
+
         EndDrawing();
 	}
 

@@ -1,10 +1,6 @@
 local goal = {}
 local locked = true
-
-function wait(t)
- 	local start = os.time()
- 	repeat until os.time() > start + t
-end
+local timer
 
 function goal:OnCreate()
     locked = true
@@ -16,16 +12,23 @@ function goal:OnUpdate(delta)
 		locked = false
         scene.SetComponent(self.ID, "visual", "goal_open", "goal_open", true)
     end
+
+    if (system.PlayerState() == 2) then
+        timer = timer + delta
+
+        if (timer > 1.0) then
+		    system.LoadScene("menu")
+		    input.EnableCursor()
+        end
+    else
+        timer = 0.0
+    end
 end
 
 function goal:OnCollision(delta, collisionX, collisionY, collisionZ)
 	if ((collisionX or collisionY or collisionZ) and not locked) then
-        co = coroutine.create(function ()
-			wait(1)
-			system.LoadScene("menu")
-			input.EnableCursor()
-            end)
-	    coroutine.resume(co)
+        system.Win()
+        timer = 0.0
     end
 end
 

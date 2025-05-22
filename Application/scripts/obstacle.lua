@@ -1,9 +1,5 @@
 local obstacle = {}
-
-function wait(t)
- 	local start = os.time()
- 	repeat until os.time() > start + t
-end
+local timer = 0
 
 function obstacle:OnCreate()
 
@@ -13,13 +9,23 @@ function obstacle:OnCreate()
 end
 
 function obstacle:OnUpdate(delta)
+
+	if (system.PlayerState() == 1) then
+		timer = timer + delta
+
+		if (timer > 1.0) then
+			system.ResetScene()
+		end
+	else 
+		timer = 0.0
+	end
 end
 
 function obstacle:OnCollision(delta, collisionX, collisionY, collisionZ)
 
-	if (collisionX or collisionY or collisionZ) then
-		wait(1)
-		system.ResetScene()
+	if ((collisionX or collisionY or collisionZ) and (system.PlayerState() == 0)) then
+        system.Lose()
+		timer = 0.0
 	end
 end
 
