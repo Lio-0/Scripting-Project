@@ -2,7 +2,8 @@
 
 By Lio Ballantyne & Axel Bergman
 
-Build instructions: All required libraries are included in the project files, no additional software is required to build except for Visual Studio.
+## Build instructions: 
+All required libraries are included in the project files, no additional software is required to build except for Visual Studio.
 
 ## Game controls:
   W, A, S, D to move.
