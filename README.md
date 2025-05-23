@@ -1,11 +1,10 @@
-# Scripting-Project
-Scripting Project: Jonas Jump
+# Scripting Project: Jonas Jump
 
-By Lio Ballantyne & Axel Bergman
+##By Lio Ballantyne & Axel Bergman
 
 Build instructions: All required libraries are included in the project files, no additional software is required to build except for Visual Studio.
 
-**Game controls:**
+##**Game controls:**
   W, A, S, D to move.
 
   Use mouse movement to look around. 
@@ -14,13 +13,13 @@ Build instructions: All required libraries are included in the project files, no
 
   Hold Shift to run while moving.
 
-**Editor controls:**
+##**Editor controls:**
 
   Right Click toggles the mouse cursor.
 
   The yellow sphere indicates the player spawn location.
 
-**While cursor is active:**
+##**While cursor is active:**
 
 Left Click objects and move the mouse to drag them around.
 Pressing DELETE while dragging an object deletes it.
@@ -33,7 +32,7 @@ Pressing DELETE while dragging an object deletes it.
   The Save & Exit button returns to the menu and overwrites the level file which is loaded
   in when pressing Play in the main menu.
   
-**While cursor is disabled:**
+##**While cursor is disabled:**
 
   W, A, S, D to move.
   
