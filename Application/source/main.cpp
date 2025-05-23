@@ -125,6 +125,7 @@ int main()
 
     //Sounds
     Sound jonasWav = LoadSound("assets/jonas.wav");
+    SetSoundVolume(jonasWav, 0.1f);
 
     //Models
     Renderer renderer;
