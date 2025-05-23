@@ -307,13 +307,6 @@ public:
 			if (hitEntity != entt::null) {
 				m_draggedEntity = hitEntity;
 			}
-
-			if (IsKeyPressed(KEY_DELETE))
-			{
-				registry.destroy(m_draggedEntity);
-				m_draggedEntity = entt::null;
-				hitEntity = entt::null;
-			}
 		}
 
 		// Stop dragging on release
@@ -361,6 +354,13 @@ public:
 				}
 			}
 		};
+
+		if (IsKeyPressed(KEY_DELETE) && m_draggedEntity != entt::null)
+		{
+			registry.destroy(m_draggedEntity);
+			m_draggedEntity = entt::null;
+		}
+
 		return false;
 	}
 };
