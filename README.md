@@ -2,6 +2,11 @@
 
 By Lio Ballantyne & Axel Bergman
 
+## Libraries
+This project uses RayLib and ENTT!
+https://github.com/raysan5/raylib
+https://github.com/skypjack/entt
+
 ## Build instructions: 
 All required libraries are included in the project files, no additional software is required to build except for Visual Studio.
 
