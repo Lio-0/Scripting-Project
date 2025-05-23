@@ -32,7 +32,7 @@ For a standalone folder with an executable, the assets and scripts must be inclu
   The yellow sphere indicates the player spawn location.
   
 
-## While cursor is active:
+### While cursor is active:
 
 Left Click objects and move the mouse to drag them around.
 Pressing DELETE while dragging an object deletes it.
@@ -46,7 +46,7 @@ Pressing DELETE while dragging an object deletes it.
   in when pressing Play in the main menu.
 
   
-## While cursor is disabled:
+### While cursor is disabled:
 
   W, A, S, D to move.
   
