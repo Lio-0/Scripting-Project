@@ -1,6 +1,6 @@
 # Scripting Project: Jonas Jump
 
-By Lio Ballantyne & Axel Bergman
+#### By Lio Ballantyne & Axel Bergman
 
 ## Libraries
 This project uses RayLib and ENTT!
