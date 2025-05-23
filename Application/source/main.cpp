@@ -189,7 +189,7 @@ int main()
         {
             BeginMode3D(camera);
             DrawGrid(200, 5.0f);
-            DrawPlane({0, -10, 0}, {1000, 1000}, GRAY);
+            DrawPlane({0, -10, 0}, {1000, 1000}, LIGHTGRAY);
             DrawSphere({0, 2, 0}, 0.5f, YELLOW);
             EndMode3D();
         }
