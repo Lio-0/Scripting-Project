@@ -1,14 +1,18 @@
 # Scripting-Project
 Scripting Project: Jonas Jump
-Lio Ballantyne & Axel Bergman
+
+By Lio Ballantyne & Axel Bergman
 
 Build instructions: All required libraries are included in the project files, no additional software is required to build except for Visual Studio.
 
 **Game controls:**
-W, A, S, D to move.
-Use mouse movement to look around. 
-Press and hold Space to jump.
-Hold Shift to run while moving.
+  W, A, S, D to move.
+
+  Use mouse movement to look around. 
+
+  Press and hold Space to jump.
+
+  Hold Shift to run while moving.
 
 **Editor controls:**
 
@@ -32,8 +36,11 @@ Pressing DELETE while dragging an object deletes it.
 **While cursor is disabled:**
 
   W, A, S, D to move.
+  
   Mouse movement to look around.
+  
   Hold Ctrl to descend.
+  
   Hold Space to ascend.
 
 For a standalone folder with an executable, the assets and scripts must be included with the following structure:
