@@ -84,13 +84,10 @@ public:
 			{
 				UpdateCamera(camera, CAMERA_FREE);
 
-
 				if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
 					EnableCursor();
-
-				
 			}
-			if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+			else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
 				DisableCursor();
 		}
 
@@ -230,37 +227,17 @@ public:
 					if (!IsKeyDown(KEY_LEFT_SHIFT)) {
 						auto selectedView = registry.view<c_Selected>();
 						registry.remove<c_Selected>(selectedView.begin(), selectedView.end());
-						if (registry.all_of<c_Color>(entity)) {
-							auto& color = registry.get<c_Color>(entity);
-							color.r = 255;
-							color.g = 255;
-							color.b = 255;
-						}
 					}
 					if (registry.all_of<c_Selected>(entity)) {
 						registry.remove<c_Selected>(entity);
-						if (registry.all_of<c_Color>(entity)) {
-							auto& color = registry.get<c_Color>(entity);
-							color.r = 255;
-							color.g = 255;
-							color.b = 255;
-						}
 					}
 					else {
 						registry.emplace<c_Selected>(entity);
-						if (registry.all_of<c_Color>(entity)) {
-							auto& color = registry.get<c_Color>(entity);
-							color.r = 0;
-							color.g = 255;
-							color.b = 0;
-						}
 					}
 
 					break;
 				}
 			}
-
-
 
 			if (!clickedOnEntity && !IsKeyDown(KEY_LEFT_SHIFT)) {
 				auto selectedView = registry.view<c_Selected>();
@@ -330,27 +307,17 @@ public:
 			if (hitEntity != entt::null) {
 				m_draggedEntity = hitEntity;
 			}
+
+			if (IsKeyPressed(KEY_DELETE))
+			{
+				registry.destroy(m_draggedEntity);
+				m_draggedEntity = entt::null;
+				hitEntity = entt::null;
+			}
 		}
 
 		// Stop dragging on release
 		if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-			if (m_draggedEntity != entt::null && registry.all_of<c_Color>(m_draggedEntity)) {
-				auto& color = registry.get<c_Color>(m_draggedEntity);
-				color.r = 255;
-				color.g = 255;
-				color.b = 255;
-			}
-			if (m_draggedEntity != entt::null && registry.all_of<c_Color, c_Behaviour>(m_draggedEntity)) {
-				auto& color = registry.get<c_Color>(m_draggedEntity);
-				auto& b = registry.get<c_Behaviour>(m_draggedEntity);
-
-				if (b.ScriptPath == "scripts/obstacle.lua")
-				{
-					color.r = 255;
-					color.g = 0;
-					color.b = 0;
-				}
-			}
 			m_draggedEntity = entt::null;
 		}
 
@@ -373,13 +340,6 @@ public:
 			transform.position.x = target.x;
 			transform.position.y = target.y;
 			transform.position.z = target.z;
-
-			if (registry.all_of<c_Color>(m_draggedEntity)) {
-				auto& color = registry.get<c_Color>(m_draggedEntity);
-				color.r = 0;
-				color.g = 200;
-				color.b = 0;
-			}
 
 			// Apply Q/E for transformation
 			const float step = delta;

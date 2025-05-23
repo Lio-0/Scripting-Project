@@ -26,13 +26,11 @@ LuaInput::LuaInput(lua_State* L) : m_luaState(L)
 	lua_pushlightuserdata(L, this);
 	luaL_setfuncs(L, methods, 1);
 	lua_setglobal(L, "input");
-
 }
 
 int LuaInput::lua_GetKeyPressed(lua_State* L)
 {
 	lua_pushinteger(L, GetKeyPressed());
-
 	return 1;
 }
 

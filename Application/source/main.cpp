@@ -100,6 +100,7 @@ int main()
 	const int screenHeight = 450 * 2;
 
 	InitWindow(screenWidth, screenHeight, "Jonas Jump");
+    InitAudioDevice();
 
     // Define the camera to look into our 3d world (position, target, up vector)
     camera = { 0 };
@@ -121,6 +122,9 @@ int main()
 
     UnloadImage(logo);
     UnloadImage(c_logo);
+
+    //Sounds
+    Sound jonasWav = LoadSound("assets/jonas.wav");
 
     //Models
     Renderer renderer;
@@ -161,34 +165,11 @@ int main()
         {
             auto view = sm.GetCurrentScene()->GetRegistry()->view<c_Selected>();
             for (auto [entity] : view.each()) {
-                if (IsKeyPressed(KEY_O)) {
-                    luaL_dofile(L, "scripts/obstacle.lua");
-                    lua_pushvalue(L, -1);
-                    int luaTableRef = luaL_ref(L, LUA_REGISTRYINDEX);
-
-                    lua_pushinteger(L, (int)entity);
-                    lua_setfield(L, -2, "ID");
-
-                    lua_pushstring(L, "scripts/obstacle.lua");
-                    lua_setfield(L, -2, "path");
-
-                    lua_getfield(L, -1, "OnCreate");
-                    lua_pushvalue(L, -2);
-                    lua_pcall(L, 1, 0, 0);
-
-                    sm.GetCurrentScene()->SetComponent<c_Behaviour>((int)entity, "scripts/obstacle.lua", luaTableRef);
-                }
-                if (IsKeyPressed(KEY_DELETE) && IsMouseButtonUp(MOUSE_BUTTON_LEFT))
+                /*if (IsKeyPressed(KEY_DELETE) && IsMouseButtonUp(MOUSE_BUTTON_LEFT))
                 {
                     sm.GetCurrentScene()->RemoveEntity((int)entity);
-                }
+                }*/
             }
-        }
-
-
-        if (IsKeyPressed(KEY_L))
-        {
-            sm.GetCurrentScene()->Reset();
         }
 
         sm.UpdateScene(L, GetFrameTime());
@@ -203,12 +184,18 @@ int main()
             DrawTexture(title_texture, screenWidth / 2 - title_texture.width / 2, screenHeight / 8, WHITE);
             DrawTexture(logo_texture, screenWidth - logo_texture.width - 50, screenHeight - logo_texture.height - 50, WHITE);
         }
-
-        if (sm.GetCurrentScene() == &EditingScene)
+        else if (sm.GetCurrentScene() == &EditingScene)
         {
             BeginMode3D(camera);
-            DrawGrid(100, 5.0f);
+            DrawGrid(200, 5.0f);
+            DrawPlane({0, -10, 0}, {1000, 1000}, MAROON);
+            DrawSphere({0, 2, 0}, 0.5f, YELLOW);
             EndMode3D();
+        }
+        else if (sm.GetCurrentScene() == &GameScene)
+        {
+            if (!IsSoundPlaying(jonasWav))
+                PlaySound(jonasWav);
         }
 
         sm.DrawScene(renderer, camera);
@@ -218,6 +205,8 @@ int main()
         EndDrawing();
 	}
 
+    UnloadSound(jonasWav);
+    CloseAudioDevice();
 	CloseWindow();
 
 	return 0;

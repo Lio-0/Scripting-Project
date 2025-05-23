@@ -26,9 +26,11 @@ private:
 	static int lua_Win(lua_State* L);
 	static int lua_Lose(lua_State* L);
 	static int lua_GetPState(lua_State* L);
+	static int lua_ToggleBlockChoice(lua_State* L);
 	static std::unordered_map<std::string, Scene*> m_scenes;
 	static Scene* m_currentScene;
 	static bool m_changeScene;
+	static bool m_blockMenu;
 	static float m_winTimer;
 	static float m_loseTimer;
 	static PlayerState m_playerState;

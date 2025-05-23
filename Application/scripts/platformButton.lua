@@ -1,6 +1,7 @@
 local platformButton = {}
 local mainColor = {a = 255, r = 255, g = 255, b = 255}
 local button = {}
+local co = coroutine.create(function() end)
 
 function platformButton:OnCreate()
 	button = {
@@ -42,10 +43,50 @@ function platformButton:OnUpdate(delta)
 
 	scene.SetComponent(self.ID, "color", color)
 	scene.SetComponent(self.ID, "button", button)
+
+	if (coroutine.status(co) == "suspended") and (input.IsKeyPressed(80) or input.IsKeyPressed(79)) then --Space
+		coroutine.resume(co, input.IsKeyPressed(79))
+	end
 end
 
 function platformButton:OnClick(delta)
-	dofile("scripts/createPlatform.lua")
+	co = coroutine.create( function ()
+		system.ToggleBlockChoice()
+		local entity = scene.CreateEntity()
+
+		local transform = {
+			position = {
+				x = 0,
+				y = 0,
+				z = 0
+			},
+
+			rotation = {
+				x = 0,
+				y = 0,
+				z = 0
+			},
+
+			scale = {
+				x = 4,
+				y = 0.5,
+				z = 4
+			}
+		}
+
+		scene.SetComponent(entity, "visual", "cube", "rock_texture", true) 
+		scene.SetComponent(entity, "collision", 1)
+		scene.SetComponent(entity, "transform", transform)
+		scene.SetComponent(entity, "clickable")
+		scene.SetComponent(entity, "color", {r = 255, g = 255, b = 255})
+		scene.SetComponent(entity, "vector", transform.rotation)
+
+		if (coroutine.yield() and scene.IsEntity(entity)) then
+			scene.SetComponent(entity, "behaviour", "scripts/obstacle.lua")
+		end
+		system.ToggleBlockChoice()
+	end)
+	coroutine.resume(co)
 end
 
 function platformButton:OnReset(delta)

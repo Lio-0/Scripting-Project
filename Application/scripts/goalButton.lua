@@ -45,10 +45,7 @@ function goalButton:OnUpdate(delta)
 end
 
 function goalButton:OnClick(delta)
-	co = coroutine.create(function ()
-		dofile("scripts/createGoal.lua")
-         end)
-	coroutine.resume(co)
+	dofile("scripts/createGoal.lua")
 end
 
 function goalButton:OnReset(delta)

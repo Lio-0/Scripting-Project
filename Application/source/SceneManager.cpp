@@ -8,6 +8,7 @@ bool SceneManager::m_changeScene = false;
 float SceneManager::m_winTimer = 1;
 float SceneManager::m_loseTimer = 1;
 PlayerState SceneManager::m_playerState = Alive;
+bool SceneManager::m_blockMenu = false;
 
 SceneManager::SceneManager(lua_State* L)
 {
@@ -20,6 +21,7 @@ SceneManager::SceneManager(lua_State* L)
 		{"Win", lua_Win},
 		{"Lose", lua_Lose},
 		{"PlayerState", lua_GetPState},
+		{"ToggleBlockChoice", lua_ToggleBlockChoice},
 		{NULL, NULL}
 	};
 
@@ -71,6 +73,7 @@ void SceneManager::DrawScene(Renderer& renderer, Camera& camera)
 
 void SceneManager::LoadScene(lua_State* L, std::string name)
 {
+	m_blockMenu = false;
 	m_currentScene = m_scenes[name];
 	Scene::lua_openscene(L, m_currentScene);
 }
@@ -131,4 +134,16 @@ void SceneManager::UpdateTimers(float delta)
 	{
 		m_playerState = Alive;
 	}
+
+	if (m_blockMenu)
+	{
+		DrawText("'P' for Platform", GetScreenWidth() / 2, GetScreenHeight() / 9, 40, DARKGRAY);
+		DrawText("'O' for Obstacle", GetScreenWidth() / 2 + 400, GetScreenHeight() / 9, 40, MAROON);
+	}
+}
+
+int SceneManager::lua_ToggleBlockChoice(lua_State* L)
+{
+	m_blockMenu = !m_blockMenu;
+	return 0;
 }
