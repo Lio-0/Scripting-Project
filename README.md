@@ -3,7 +3,7 @@ Scripting Project: Jonas Jump
 Lio Ballantyne & Axel Bergman
 Build instructions: All required libraries are included in the project files, no additional software is required to build except for Visual Studio.
 
-**Game controls: **
+**Game controls:**
 W, A, S, D to move.
 Use mouse movement to look around. 
 Press and hold Space to jump.
